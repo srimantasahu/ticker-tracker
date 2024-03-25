@@ -4,6 +4,11 @@
 # Log file
 *.log
 
+# Tagret files
+target/
+.idea/
+
+
 # BlueJ files
 *.ctxt
 
