@@ -125,6 +125,8 @@ public class DataScrapperTest {
 
             System.out.println("Clicked on download csv");
 
+            Thread.sleep(10000);
+
             File dwldfile = new File(expectedFileName);
 
             // Start downloading here.
