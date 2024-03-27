@@ -12,6 +12,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <postgresql.version>42.7.3</postgresql.version>
         <selenium.version>4.18.1</selenium.version>
         <junit.version>5.10.2</junit.version>
         <maven-compiler.version>3.13.0</maven-compiler.version>
@@ -19,6 +20,13 @@
     </properties>
 
     <dependencies>
+        <!-- postgresql -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
+        </dependency>
+
         <!-- selenium-java -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>

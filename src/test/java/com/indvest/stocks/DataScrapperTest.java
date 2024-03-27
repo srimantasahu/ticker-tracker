@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,7 +126,7 @@ public class DataScrapperTest {
 
             System.out.println("Clicked on download csv");
 
-            Thread.sleep(10000);
+            Thread.sleep(5000);
 
             File dwldfile = new File(expectedFileName);
 
@@ -134,24 +135,39 @@ public class DataScrapperTest {
 
             System.out.println("Downloaded csv file exists in path");
 
+            List<Map<String, String>> refDataList = new ArrayList<>();
+
             try (CSVReader reader = new CSVReader(new FileReader(expectedFileName))) {
-                String[] nextLine;
-                boolean first = true;
-                // Read and process each line of the CSV file
-                while ((nextLine = reader.readNext()) != null) {
-                    // Print each line
-                    for (String cell : nextLine) {
-                        if (first) {
-                            System.out.print(cell.replace("\n", "") + "\t\t");
-                        } else System.out.print(cell.replace("\n", "") + "\t");
+                List<String> headers = new ArrayList<>();
+                String[] nextLine = reader.readNext();
+
+                if (nextLine != null) { // header row
+                    for (String header: nextLine) {
+                        String fHeader = header.replace("%", "PER").replaceAll("\\W|(?i)(shares|Crores)", "");
+                        headers.add(fHeader.contains("365DPERCHNG") ? "365DPERCHNG" : fHeader);
                     }
-                    first = false;
-                    System.out.println(); // Move to the next line
+                    // Read and process each line of the CSV file
+                    while ((nextLine = reader.readNext()) != null) {
+                        if (nextLine.length != headers.size()) {
+                            throw new ArrayIndexOutOfBoundsException(String.format("Headers: %d and Columns: %d - not matching!", headers.size(), nextLine.length));
+                        }
+                        Map<String, String> rowMap = new HashMap<>();
+                        for (int i = 0; i < headers.size(); i++) {
+                            rowMap.put(headers.get(i), nextLine[i]);
+                        }
+                        refDataList.add(rowMap);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 System.err.println("CSV validation error: " + e.getMessage());
             }
+
+            System.out.println(refDataList);
+
+
+
+
 
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
