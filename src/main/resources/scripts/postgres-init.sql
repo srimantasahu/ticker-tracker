@@ -37,7 +37,7 @@ CREATE SCHEMA IF NOT EXISTS stocks
 
 CREATE TABLE IF NOT EXISTS stocks.refdata
 (
-    id integer NOT NULL DEFAULT nextval('stocks.refdata_id_seq'::regclass),
+    id bigserial NOT NULL,
     symbol character varying(25) COLLATE pg_catalog."default" NOT NULL,
     ltp double precision NOT NULL,
     chng double precision NOT NULL,

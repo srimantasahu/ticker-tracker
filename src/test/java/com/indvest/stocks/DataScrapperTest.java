@@ -84,6 +84,8 @@ public class DataScrapperTest {
     void nifty50DownloadTest() {
         System.out.println("Starting...");
 
+       String expectedFileName = "/Users/srimantasahu/Downloads/" + "MW-NIFTY-50-" + LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MMM-yyyy")) + ".csv";
+
         // defining the options to run Chrome in headless mode
         ChromeOptions options = new ChromeOptions();
 //        options.addArguments("--headless");
@@ -96,14 +98,14 @@ public class DataScrapperTest {
 
         // initializing a Selenium WebDriver ChromeDriver instance
         // to run Chrome in headless mode
+
         WebDriver driver = new ChromeDriver(options);
 
-        // connecting to the target web page
-        driver.get("https://www.nseindia.com/market-data/live-equity-market?symbol=NIFTY%2050");
-
-        String expectedFileName = "/Users/srimantasahu/Downloads/" + "MW-NIFTY-50-" + LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MMM-yyyy")) + ".csv";
-
         try {
+            // connecting to the target web page
+            driver.get("https://www.nseindia.com/market-data/live-equity-market?symbol=NIFTY%2050");
+
+
             //Declare and initialise a fluent wait
             FluentWait<WebDriver> wait = new FluentWait<>(driver);
             //Specify the timout of the wait
@@ -177,6 +179,8 @@ public class DataScrapperTest {
 
         System.out.println(refDataList);
 
+        System.out.println("Inserting data to postgres...");
+
 
         String url = "jdbc:postgresql://localhost:5432/nsedata";
         String user = "postgres";
@@ -205,6 +209,8 @@ public class DataScrapperTest {
                 pst.addBatch();
             }
             pst.executeBatch();
+
+            System.out.println("Batch insertion completed!");
 
         } catch (Exception e) {
             e.printStackTrace();
