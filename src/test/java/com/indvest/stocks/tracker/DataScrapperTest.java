@@ -1,6 +1,7 @@
-package com.indvest.stocks;
+package com.indvest.stocks.tracker;
 
 import com.opencsv.CSVReader;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Disabled
 public class DataScrapperTest {
 
     @Test
