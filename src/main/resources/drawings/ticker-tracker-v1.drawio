@@ -1,0 +1,49 @@
+<mxfile host="app.diagrams.net" modified="2024-04-01T11:56:29.791Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" etag="PnYKi-lviwim3Z0T_C64" version="24.2.1" type="device">
+  <diagram name="Page-1" id="mKvocD23BUejUbPCv0vp">
+    <mxGraphModel dx="783" dy="632" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="NgZA12xCl4L_tEV6HPbZ-2" value="Rest endpoints&lt;div&gt;&lt;br&gt;/download?type=&lt;div&gt;/parse?file=&lt;/div&gt;&lt;/div&gt;&lt;div&gt;/save?file=&lt;/div&gt;&lt;div&gt;/search?query=&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="90" width="160" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="NgZA12xCl4L_tEV6HPbZ-3" value="Service layer&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;validations&lt;/div&gt;&lt;div&gt;check file exists&lt;/div&gt;&lt;div&gt;selenium extractions&lt;/div&gt;&lt;div&gt;csv parsing&lt;/div&gt;&lt;div&gt;sanitise query&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="270" width="120" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="NgZA12xCl4L_tEV6HPbZ-5" value="postgres" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="490" width="60" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NgZA12xCl4L_tEV6HPbZ-6" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="NgZA12xCl4L_tEV6HPbZ-2" target="NgZA12xCl4L_tEV6HPbZ-3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="460" y="400" as="sourcePoint" />
+            <mxPoint x="510" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NgZA12xCl4L_tEV6HPbZ-7" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="NgZA12xCl4L_tEV6HPbZ-3" target="NgZA12xCl4L_tEV6HPbZ-8">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="610" y="470" as="sourcePoint" />
+            <mxPoint x="690" y="470.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NgZA12xCl4L_tEV6HPbZ-8" value="DAO layer&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;db interactions&lt;/div&gt;&lt;div&gt;load&lt;/div&gt;&lt;div&gt;loadAll&lt;/div&gt;&lt;div&gt;update&lt;/div&gt;&lt;div&gt;search&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="450" width="120" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="NgZA12xCl4L_tEV6HPbZ-9" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="NgZA12xCl4L_tEV6HPbZ-8">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="720" y="330" as="sourcePoint" />
+            <mxPoint x="560" y="530" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NgZA12xCl4L_tEV6HPbZ-13" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" target="NgZA12xCl4L_tEV6HPbZ-3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="280" y="340" as="sourcePoint" />
+            <mxPoint x="310" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NgZA12xCl4L_tEV6HPbZ-15" value="Schedulers&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;refresh data&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="310" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
