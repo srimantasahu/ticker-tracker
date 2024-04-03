@@ -37,7 +37,6 @@ CREATE SCHEMA IF NOT EXISTS stocks
 
 CREATE TABLE IF NOT EXISTS stocks.refdata
 (
-    id bigserial NOT NULL,
     symbol character varying(25) COLLATE pg_catalog."default" NOT NULL,
     ltp double precision NOT NULL,
     chng double precision NOT NULL,
@@ -53,6 +52,8 @@ CREATE TABLE IF NOT EXISTS stocks.refdata
     percent_chng_30d double precision,
     percent_chng_365d double precision,
     updated_at timestamp default NOW(),
+    created_at timestamp default NOW(),
+    id bigserial NOT NULL,
     CONSTRAINT refdata_pk PRIMARY KEY (symbol)
 )
 

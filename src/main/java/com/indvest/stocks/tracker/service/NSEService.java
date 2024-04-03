@@ -3,6 +3,7 @@ package com.indvest.stocks.tracker.service;
 import com.google.common.net.UrlEscapers;
 import com.indvest.stocks.tracker.bean.Status;
 import com.indvest.stocks.tracker.bean.StatusMessage;
+import com.indvest.stocks.tracker.repository.NSERepository;
 import com.indvest.stocks.tracker.util.CommonUtil;
 import com.indvest.stocks.tracker.util.SeleniumUtil;
 import com.opencsv.CSVReader;
@@ -13,6 +14,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +39,9 @@ public class NSEService {
 
     @Value("${nse.download.poll.interval}")
     private int pollInterval;
+
+    @Autowired
+    private NSERepository nseRepository;
 
     public StatusMessage downloadStocksData(String entity) {
         if (StringUtils.isBlank(entity)) {
@@ -101,8 +106,7 @@ public class NSEService {
             List<Map<String, String>> refDataList = extractRefData(expectedFileName);
             log.info("Extracted ref data list size: {}", refDataList.size());
 
-            // TODO: call repository for persistence
-
+            nseRepository.save(refDataList);
         } catch (Exception e) {
             log.error("Error message: {}", e.getMessage());
             return new StatusMessage(Status.ERROR, e.getMessage());

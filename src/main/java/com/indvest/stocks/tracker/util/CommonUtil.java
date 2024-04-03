@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 
 public final class CommonUtil {
 
-    private CommonUtil(){
+    private CommonUtil() {
     }
 
     public static String getNSEFileName(String entity) {

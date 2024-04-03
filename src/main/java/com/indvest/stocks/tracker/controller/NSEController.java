@@ -23,7 +23,7 @@ public class NSEController {
     public Response download(@RequestParam String entity) {
         log.info("Request received for downloading : {}", entity);
         StatusMessage statusMessage = nseService.downloadStocksData(entity.trim());
-        log.info("Download of entity: {}, resulted in {} with message: {}", entity, statusMessage.status(), statusMessage.message());
+        log.info("Download of entity: {}, resulted: {}, with message: {}", entity, statusMessage.status(), statusMessage.message());
         return new Response(entity, statusMessage.status(), statusMessage.message());
     }
 
@@ -31,7 +31,7 @@ public class NSEController {
     public Response store(@RequestParam String entity) {
         log.info("Request received for storing : {}", entity);
         StatusMessage statusMessage = nseService.storeStocksData(entity.trim());
-        log.info("Storing of entity: {}, resulted in {} with message: {}", entity, statusMessage.status(), statusMessage.message());
+        log.info("Storing of entity: {}, resulted: {}, with message: {}", entity, statusMessage.status(), statusMessage.message());
         return new Response(entity, statusMessage.status(), statusMessage.message());
     }
 
