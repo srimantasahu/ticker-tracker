@@ -100,6 +100,17 @@ CREATE TABLE IF NOT EXISTS stocks.insdata
     percent_traded_qty float precision,
     app_mar_Rate float precision,
     face_val int NOT NULL,
+    high_52w double precision,
+    high_52w_dt date,
+    low_52w double precision,
+    low_52w_dt date,
+    upper_band double precision,
+    lower_band double precision,
+    price_band character varying(20),
+
+
+
+
 
     volume_sh bigint NOT NULL,
     value_cr double precision NOT NULL,

@@ -24,6 +24,7 @@ public class TickerInfo {
 
     private Double upperBand;
     private Double lowerBand;
+    private String priceBand;
 
     private String listedStatus;
     private String listingDt;
@@ -180,6 +181,14 @@ public class TickerInfo {
 
     public void setLowerBand(Double lowerBand) {
         this.lowerBand = lowerBand;
+    }
+
+    public String getPriceBand() {
+        return priceBand;
+    }
+
+    public void setPriceBand(String priceBand) {
+        this.priceBand = priceBand;
     }
 
     public String getListedStatus() {
