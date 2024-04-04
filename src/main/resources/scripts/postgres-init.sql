@@ -82,3 +82,40 @@ select symbol, ltp from stocks.refdata where ltp < 200;
 
 
 ------------------------------------------------------------------------------------------------------------------------
+
+-- Table: stocks.refdata
+
+-- DROP TABLE IF EXISTS stocks.insdata;
+
+CREATE TABLE IF NOT EXISTS stocks.insdata
+(
+    symbol character varying(25) COLLATE pg_catalog."default" NOT NULL,
+    buy_qty bigint NOT NULL,
+    sell_qty bigint NOT NULL,
+    volume_lk double precision NOT NULL,
+    value_cr double precision NOT NULL,
+    tot_mar_cap_cr double precision NOT NULL,
+    ff_mar_cap_cr double precision NOT NULL,
+    impact_cost float precision NOT NULL,
+    percent_traded_qty float precision,
+    app_mar_Rate float precision,
+    face_val int NOT NULL,
+
+    volume_sh bigint NOT NULL,
+    value_cr double precision NOT NULL,
+    high_52w double precision,
+    low_52w double precision,
+    percent_chng_30d double precision,
+    percent_chng_365d double precision,
+    updated_at timestamp default NOW(),
+    created_at timestamp default NOW(),
+    id bigserial NOT NULL,
+    CONSTRAINT insdata_pk PRIMARY KEY (symbol)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS stocks.insdata
+
+
+------------------------------------------------------------------------------------------------------------------------

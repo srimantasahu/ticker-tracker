@@ -57,7 +57,7 @@ public class NSERepositoryImpl implements NSERepository {
 
         int[] updateResult = namedJdbcTemplate.batchUpdate(upsertQuery, SqlParameterSourceUtils.createBatch(refDataMap));
 
-        log.info("Update result: {}", updateResult);
+        log.debug("Update result: {}", updateResult);
         log.info("Update result count: {}, sum: {}", updateResult.length, Arrays.stream(updateResult).sum());
     }
 

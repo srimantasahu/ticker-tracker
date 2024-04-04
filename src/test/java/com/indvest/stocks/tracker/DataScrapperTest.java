@@ -27,7 +27,7 @@ import java.util.Map;
 public class DataScrapperTest {
 
     @Test
-    void nifty50Test() {
+    void nifty50ExtractionTest() {
 
         System.out.println("Starting...");
 
@@ -357,6 +357,124 @@ public class DataScrapperTest {
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Postgres insertion error: " + e.getMessage());
+        }
+
+    }
+
+    @Test
+    void niftyExtractTickerInfoTest() {
+
+        System.out.println("Starting...");
+
+        // defining the options to run Chrome in headless mode
+        ChromeOptions options = new ChromeOptions();
+//        options.addArguments("--headless");
+
+        // initializing a Selenium WebDriver ChromeDriver instance
+        // to run Chrome in headless mode
+        WebDriver driver = new ChromeDriver(options);
+
+        // connecting to the target web page
+        driver.get("https://www.nseindia.com/get-quotes/equity?symbol=DABUR");
+
+        try {
+            //Declare and initialise a fluent wait
+            FluentWait<WebDriver> wait = new FluentWait<>(driver);
+            //Specify the timout of the wait
+            wait.withTimeout(Duration.ofMillis(20000));
+            //Specify polling time
+            wait.pollingEvery(Duration.ofMillis(500));
+            //Specify what exceptions to ignore
+            wait.ignoring(NoSuchElementException.class);
+
+            wait.until(d -> ((JavascriptExecutor) driver).executeScript("return document.readyState").equals("complete"));
+
+            //This is how we specify the condition to wait on.
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"orderbk\"]")));
+
+            Thread.sleep(5000);
+
+            System.out.println("order book buy qty: " + driver.findElement(By.xpath("//*[@id=\"orderBuyTq\"]")).getText());
+            System.out.println("order book sell qty: " + driver.findElement(By.xpath("//*[@id=\"orderSellTq\"]")).getText());
+
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"Trade_Information_pg\"]")));
+
+            System.out.println("order book trade vol in lk: " + driver.findElement(By.xpath("//*[@id=\"orderBookTradeVol\"]")).getText());
+            System.out.println("order book trade value in cr: " + driver.findElement(By.xpath("//*[@id=\"orderBookTradeVal\"]")).getText());
+            System.out.println("order book total market cap in cr: " + driver.findElement(By.xpath("//*[@id=\"orderBookTradeTMC\"]")).getText());
+            System.out.println("order book free float market cap in cr: " + driver.findElement(By.xpath("//*[@id=\"orderBookTradeFFMC\"]")).getText());
+            System.out.println("order book impact cost: " + driver.findElement(By.xpath("//*[@id=\"orderBookTradeIC\"]")).getText());
+            System.out.println("order book percent traded qty: " + driver.findElement(By.xpath("//*[@id=\"orderBookDeliveryTradedQty\"]")).getText());
+            System.out.println("order book applicable margin rate: " + driver.findElement(By.xpath("//*[@id=\"orderBookAppMarRate\"]")).getText());
+            System.out.println("order book face value: " + driver.findElement(By.xpath("//*[@id=\"mainFaceValue\"]")).getText());
+
+
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"priceInformationHeading\"]")));
+
+            System.out.println("52 week high: " + driver.findElement(By.xpath("//*[@id=\"week52highVal\"]")).getText());
+            System.out.println("52 week high date: " + driver.findElement(By.xpath("//*[@id=\"week52HighDate\"]")).getText());
+            System.out.println("52 week low: " + driver.findElement(By.xpath("//*[@id=\"week52lowVal\"]")).getText());
+            System.out.println("52 week low date: " + driver.findElement(By.xpath("//*[@id=\"week52LowDate\"]")).getText());
+            System.out.println("upper band: " + driver.findElement(By.xpath("//*[@id=\"upperbandVal\"]")).getText());
+            System.out.println("lower band: " + driver.findElement(By.xpath("//*[@id=\"lowerbandVal\"]")).getText());
+            System.out.println("price band: " + driver.findElement(By.xpath("//*[@id=\"pricebandVal\"]")).getText());
+
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"Securities_Info_New\"]")));
+
+            System.out.println("status listed: " + driver.findElement(By.xpath("//*[@id=\"status\"]/../td[2]")).getText());
+            System.out.println("trading status: " + driver.findElement(By.xpath("//*[@id=\"TradingStatus\"]/../td[2]")).getText());
+            System.out.println("listing date: " + driver.findElement(By.xpath("//*[@id=\"Date_of_Listing\"]/../td[2]")).getText());
+            System.out.println("adjusted P/E: " + driver.findElement(By.xpath("//*[@id=\"SectoralIndxPE\"]/../td[2]")).getText());
+            System.out.println("symbol P/E: " + driver.findElement(By.xpath("//*[@id=\"Symbol_PE\"]/../td[2]")).getText());
+            System.out.println("sectoral index: " + driver.findElement(By.xpath("//*[@id=\"Sectoral_Index\"]/../td[2]")).getText());
+            System.out.println("basic industry: " + driver.findElement(By.xpath("//*[@id=\"BasicIndustry\"]/../../td[2]")).getText());
+
+
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"more_securities_info_table\"]")));
+
+            System.out.println("board status: " + driver.findElement(By.xpath("//*[@id=\"BoardStatus\"]/../td[2]")).getText());
+            System.out.println("trading segment: " + driver.findElement(By.xpath("//*[@id=\"TradingSegment\"]/../td[2]")).getText());
+            System.out.println("class of shares: " + driver.findElement(By.xpath("//*[@id=\"ClassShares\"]/../td[2]")).getText());
+
+
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"topCorpActionTable\"]")));
+
+            // last value only
+            System.out.println("corp actions: \n" + driver.findElement(By.xpath("//*[@id=\"topCorpActionTable\"]")).getText());
+
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"topFinancialResultsTable\"]")));
+
+            // last value only
+            System.out.println("financial results \n" + driver.findElement(By.xpath("//*[@id=\"topFinancialResultsTable\"]")).getText());
+
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"tabletopSHP\"]")));
+
+            // last value only
+            System.out.println("shareholding patterns: \n" + driver.findElement(By.xpath("//*[@id=\"tabletopSHP\"]")).getText());
+
+
+            /*// retrieving the list of product HTML elements
+            WebElement table = driver.findElement(By.xpath("//*[@id=\"orderBuyTq\"]"));
+
+            List<WebElement> rowsList = table.findElements(By.tagName("tr"));
+
+            System.out.println("No of rows: " + rowsList.size());
+
+            for (WebElement row : rowsList) {
+                List<WebElement> columnsList = row.findElements(By.xpath("td"));
+
+                System.out.println("No of cols: " + columnsList.size());
+
+                for (WebElement column : columnsList) {
+                    System.out.println("column text" + column.getText() + ", ");
+                }
+            }*/
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            // ...
+            driver.quit();
         }
 
     }
