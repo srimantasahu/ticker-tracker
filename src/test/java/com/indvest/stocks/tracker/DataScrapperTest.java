@@ -389,7 +389,6 @@ public class DataScrapperTest {
 
             wait.until(d -> ((JavascriptExecutor) driver).executeScript("return document.readyState").equals("complete"));
 
-            //This is how we specify the condition to wait on.
             wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"orderbk\"]")));
 
             Thread.sleep(5000);

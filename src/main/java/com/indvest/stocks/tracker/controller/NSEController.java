@@ -19,7 +19,7 @@ public class NSEController {
     @Autowired
     private NSEService nseService;
 
-    @GetMapping("/download")
+    @GetMapping("download")
     public Response download(@RequestParam String entity) {
         log.info("Request received for downloading : {}", entity);
         StatusMessage statusMessage = nseService.downloadStocksData(entity.trim());
@@ -27,7 +27,7 @@ public class NSEController {
         return new Response(entity, statusMessage.status(), statusMessage.message());
     }
 
-    @GetMapping("/store")
+    @GetMapping("store")
     public Response store(@RequestParam String entity) {
         log.info("Request received for storing : {}", entity);
         StatusMessage statusMessage = nseService.storeStocksData(entity.trim());
@@ -35,5 +35,20 @@ public class NSEController {
         return new Response(entity, statusMessage.status(), statusMessage.message());
     }
 
+    @GetMapping("load")
+    public Response load(@RequestParam String symbol) {
+        log.info("Request received for loading symbol : {}", symbol);
+        StatusMessage statusMessage = nseService.loadStocksData(symbol.trim());
+        log.info("Loading of symbol: {}, resulted: {}, with message: {}", symbol, statusMessage.status(), statusMessage.message());
+        return new Response(symbol, statusMessage.status(), statusMessage.message());
+    }
+
+    @GetMapping("reload")
+    public Response reload() {
+        log.info("Request received for reloading instruments");
+        StatusMessage statusMessage = nseService.reloadStocksData();
+        log.info("Reloading of instruments resulted: {}, with message: {}", statusMessage.status(), statusMessage.message());
+        return new Response("ALL", statusMessage.status(), statusMessage.message());
+    }
 
 }

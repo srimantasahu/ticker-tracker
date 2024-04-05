@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS stocks.refdata
 	tot_mar_cap_cr double precision,
     ff_mar_cap_cr double precision,
     impact_cost double precision,
-    app_mar_Rate double precision,
+    app_mar_rate double precision,
 	face_val integer,
 	upper_band double precision,
     lower_band double precision,
