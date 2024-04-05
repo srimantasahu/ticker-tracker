@@ -1,8 +1,9 @@
 package com.indvest.stocks.tracker.bean;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.Arrays;
 
-public class TickerInfo {
+public class RefData {
 
     private String symbol;
     private Long buyQty;
@@ -18,16 +19,16 @@ public class TickerInfo {
     private Integer faceValue;
 
     private Double high52;
-    private Date high52Dt;
+    private LocalDate high52Dt;
     private Double low52;
-    private Date low52Dt;
+    private LocalDate low52Dt;
 
     private Double upperBand;
     private Double lowerBand;
     private String priceBand;
 
     private String listedStatus;
-    private String listingDt;
+    private LocalDate listedDt;
     private String tradingStatus;
 
     private Float adjustedPE;
@@ -37,13 +38,13 @@ public class TickerInfo {
     private String basicIndustry;
     private String boardStatus;
     private String tradingSegment;
-    private String classOfShares;
+    private String sharesClass;
 
-    private String corpActions;
-    private String financialResults;
-    private String shareholdingPatterns;
+    private String[] corpActions;
+    private String[] financialResults;
+    private String[] shareholdingPatterns;
 
-    public TickerInfo(String symbol) {
+    public RefData(String symbol) {
         this.symbol = symbol;
     }
 
@@ -143,11 +144,11 @@ public class TickerInfo {
         this.high52 = high52;
     }
 
-    public Date getHigh52Dt() {
+    public LocalDate getHigh52Dt() {
         return high52Dt;
     }
 
-    public void setHigh52Dt(Date high52Dt) {
+    public void setHigh52Dt(LocalDate high52Dt) {
         this.high52Dt = high52Dt;
     }
 
@@ -159,11 +160,11 @@ public class TickerInfo {
         this.low52 = low52;
     }
 
-    public Date getLow52Dt() {
+    public LocalDate getLow52Dt() {
         return low52Dt;
     }
 
-    public void setLow52Dt(Date low52Dt) {
+    public void setLow52Dt(LocalDate low52Dt) {
         this.low52Dt = low52Dt;
     }
 
@@ -199,12 +200,12 @@ public class TickerInfo {
         this.listedStatus = listedStatus;
     }
 
-    public String getListingDt() {
-        return listingDt;
+    public LocalDate getListedDt() {
+        return listedDt;
     }
 
-    public void setListingDt(String listingDt) {
-        this.listingDt = listingDt;
+    public void setListedDt(LocalDate listedDt) {
+        this.listedDt = listedDt;
     }
 
     public String getTradingStatus() {
@@ -263,35 +264,72 @@ public class TickerInfo {
         this.tradingSegment = tradingSegment;
     }
 
-    public String getClassOfShares() {
-        return classOfShares;
+    public String getSharesClass() {
+        return sharesClass;
     }
 
-    public void setClassOfShares(String classOfShares) {
-        this.classOfShares = classOfShares;
+    public void setSharesClass(String sharesClass) {
+        this.sharesClass = sharesClass;
     }
 
-    public String getCorpActions() {
+    public String[] getCorpActions() {
         return corpActions;
     }
 
-    public void setCorpActions(String corpActions) {
+    public void setCorpActions(String[] corpActions) {
         this.corpActions = corpActions;
     }
 
-    public String getFinancialResults() {
+    public String[] getFinancialResults() {
         return financialResults;
     }
 
-    public void setFinancialResults(String financialResults) {
+    public void setFinancialResults(String[] financialResults) {
         this.financialResults = financialResults;
     }
 
-    public String getShareholdingPatterns() {
+    public String[] getShareholdingPatterns() {
         return shareholdingPatterns;
     }
 
-    public void setShareholdingPatterns(String shareholdingPatterns) {
+    public void setShareholdingPatterns(String[] shareholdingPatterns) {
         this.shareholdingPatterns = shareholdingPatterns;
+    }
+
+    @Override
+    public String toString() {
+        return "RefData{" +
+                "symbol='" + symbol + '\'' +
+                ", buyQty=" + buyQty +
+                ", sellQty=" + sellQty +
+                ", tradeVolInLk=" + tradeVolInLk +
+                ", tradeValInCr=" + tradeValInCr +
+                ", totMarCapInCr=" + totMarCapInCr +
+                ", ffMarCapInCr=" + ffMarCapInCr +
+                ", impactCost=" + impactCost +
+                ", perTradedQty=" + perTradedQty +
+                ", appMarRate=" + appMarRate +
+                ", faceValue=" + faceValue +
+                ", high52=" + high52 +
+                ", high52Dt=" + high52Dt +
+                ", low52=" + low52 +
+                ", low52Dt=" + low52Dt +
+                ", upperBand=" + upperBand +
+                ", lowerBand=" + lowerBand +
+                ", priceBand='" + priceBand + '\'' +
+                ", listedStatus='" + listedStatus + '\'' +
+                ", listedDt=" + listedDt +
+                ", tradingStatus='" + tradingStatus + '\'' +
+                ", adjustedPE=" + adjustedPE +
+                ", symbolPE=" + symbolPE +
+                ", sectoralIndex='" + sectoralIndex + '\'' +
+                ", basicIndustry='" + basicIndustry + '\'' +
+                ", boardStatus='" + boardStatus + '\'' +
+                ", tradingSegment='" + tradingSegment + '\'' +
+                ", sharesClass='" + sharesClass + '\'' +
+                ", corpActions=" + Arrays.toString(corpActions) +
+                ", financialResults=" + Arrays.toString(financialResults) +
+                ", shareholdingPatterns=" + Arrays.toString(shareholdingPatterns) +
+                '}';
     }
 }
