@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public class NSERepositoryImpl implements NSERepository {
                 "VALUES(:symbol, :ltp, :chng, :per_chng, :open, :high, :low, :prev_close, :volume_sh, :value_cr, :high_52w, :low_52w, :per_chng_30d, :per_chng_365d)",
                 "ON CONFLICT (symbol)",
                 "DO UPDATE SET ltp = :ltp, chng = :chng, per_chng = :per_chng, open = :open, high = :high, low = :low, prev_close = :prev_close, volume_sh = :volume_sh, value_cr = :value_cr,",
-                "high_52w = :high_52w, low_52w = :low_52w, per_chng_30d = :per_chng_30d, per_chng_365d = :per_chng_365d, file_updated_at = :updated_at");
+                "high_52w = :high_52w, low_52w = :low_52w, per_chng_30d = :per_chng_30d, per_chng_365d = :per_chng_365d, file_updated_at = :file_updated_at");
 
         List<Map<String, Object>> refDataMap = refDataList.stream().map(refData -> {
             Map<String, Object> map = new HashMap<>();
@@ -53,7 +54,7 @@ public class NSERepositoryImpl implements NSERepository {
             map.put("low_52w", Double.parseDouble(refData.get("52WL")));
             map.put("per_chng_30d", NumberUtils.isParsable(refData.get("30DPERCHNG")) ? Double.parseDouble(refData.get("30DPERCHNG")) : -999D);
             map.put("per_chng_365d", NumberUtils.isParsable(refData.get("365DPERCHNG")) ? Double.parseDouble(refData.get("365DPERCHNG")) : -999D);
-            map.put("updated_at", Timestamp.valueOf(LocalDateTime.now()));
+            map.put("file_updated_at", Timestamp.valueOf(LocalDateTime.now()));
             return map;
         }).collect(Collectors.toList());
 
@@ -67,7 +68,7 @@ public class NSERepositoryImpl implements NSERepository {
     public void save(RefData refData) {
         log.info("Saving RefData: {}", refData);
 
-        final StringBuilder updateQuery = new StringBuilder("UPDATE stocks.refdata SET inst_updated_at = :updated_at, ");
+        final StringBuilder updateQuery = new StringBuilder("UPDATE stocks.refdata SET ");
         final Map<String, Object> refDataMap = new HashMap<>();
 
         if (refData.getBuyQty() != null) {
@@ -183,20 +184,20 @@ public class NSERepositoryImpl implements NSERepository {
             refDataMap.put("shares_class", refData.getSharesClass());
         }
         if (refData.getCorpActions() != null) {
-            updateQuery.append("corpActions = :corpActions, ");
-            refDataMap.put("corpActions", refData.getCorpActions());
+            updateQuery.append("corp_actions = :corp_actions, ");
+            refDataMap.put("corp_actions", refData.getCorpActions());
         }
         if (refData.getFinancialResults() != null) {
-            updateQuery.append("finResults = :finResults, ");
-            refDataMap.put("finResults", refData.getFinancialResults());
+            updateQuery.append("fin_results = :fin_results, ");
+            refDataMap.put("fin_results", refData.getFinancialResults());
         }
         if (refData.getShareholdingPatterns() != null) {
-            updateQuery.append("holdingPatterns = :holdingPatterns, ");
-            refDataMap.put("holdingPatterns", refData.getShareholdingPatterns());
+            updateQuery.append("holding_patterns = :holding_patterns, ");
+            refDataMap.put("holding_patterns", refData.getShareholdingPatterns());
         }
 
-        updateQuery.deleteCharAt(updateQuery.lastIndexOf(","));
-        updateQuery.append("WHERE symbol = :symbol");
+        updateQuery.append("inst_updated_at = :inst_updated_at WHERE symbol = :symbol");
+        refDataMap.put("inst_updated_at", Timestamp.valueOf(LocalDateTime.now()));
         refDataMap.put("symbol", refData.getSymbol());
 
         int updateResult = namedJdbcTemplate.update(updateQuery.toString(), refDataMap);

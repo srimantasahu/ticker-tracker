@@ -13,9 +13,9 @@ public class RefData {
     private Double tradeValInCr;
     private Double totMarCapInCr;
     private Double ffMarCapInCr;
-    private Float impactCost;
-    private Float perTradedQty;
-    private Float appMarRate;
+    private Double impactCost;
+    private Double perTradedQty;
+    private Double appMarRate;
     private Integer faceValue;
 
     private Double high52;
@@ -31,8 +31,8 @@ public class RefData {
     private LocalDate listedDt;
     private String tradingStatus;
 
-    private Float adjustedPE;
-    private Float symbolPE;
+    private Double adjustedPE;
+    private Double symbolPE;
 
     private String sectoralIndex;
     private String basicIndustry;
@@ -104,27 +104,27 @@ public class RefData {
         this.ffMarCapInCr = ffMarCapInCr;
     }
 
-    public Float getImpactCost() {
+    public Double getImpactCost() {
         return impactCost;
     }
 
-    public void setImpactCost(Float impactCost) {
+    public void setImpactCost(Double impactCost) {
         this.impactCost = impactCost;
     }
 
-    public Float getPerTradedQty() {
+    public Double getPerTradedQty() {
         return perTradedQty;
     }
 
-    public void setPerTradedQty(Float perTradedQty) {
+    public void setPerTradedQty(Double perTradedQty) {
         this.perTradedQty = perTradedQty;
     }
 
-    public Float getAppMarRate() {
+    public Double getAppMarRate() {
         return appMarRate;
     }
 
-    public void setAppMarRate(Float appMarRate) {
+    public void setAppMarRate(Double appMarRate) {
         this.appMarRate = appMarRate;
     }
 
@@ -216,19 +216,19 @@ public class RefData {
         this.tradingStatus = tradingStatus;
     }
 
-    public Float getAdjustedPE() {
+    public Double getAdjustedPE() {
         return adjustedPE;
     }
 
-    public void setAdjustedPE(Float adjustedPE) {
+    public void setAdjustedPE(Double adjustedPE) {
         this.adjustedPE = adjustedPE;
     }
 
-    public Float getSymbolPE() {
+    public Double getSymbolPE() {
         return symbolPE;
     }
 
-    public void setSymbolPE(Float symbolPE) {
+    public void setSymbolPE(Double symbolPE) {
         this.symbolPE = symbolPE;
     }
 

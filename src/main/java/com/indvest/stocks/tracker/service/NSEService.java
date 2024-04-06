@@ -154,7 +154,7 @@ public class NSEService {
 
             wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"orderbk\"]")));
 
-            Thread.sleep(5000);
+            Thread.sleep(10000);
 
             final Predicate<String> isValidText = s -> StringUtils.isNotBlank(s) && !s.trim().equals("-");
 
@@ -163,7 +163,6 @@ public class NSEService {
             log.info("order book buy qty: {}", text);
             if (isValidText.test(text))
                 refData.setBuyQty(Long.parseLong(text.replace(",", "")));
-
 
             text = driver.findElement(By.xpath("//*[@id=\"orderSellTq\"]")).getText();
             log.info("order book sell qty: {}", text);
@@ -195,17 +194,17 @@ public class NSEService {
             text = driver.findElement(By.xpath("//*[@id=\"orderBookTradeIC\"]")).getText();
             log.info("order book impact cost: {}", text);
             if (isValidText.test(text))
-                refData.setImpactCost(Float.valueOf(text.replace(",", "")));
+                refData.setImpactCost(Double.valueOf(text.replace(",", "")));
 
             text = driver.findElement(By.xpath("//*[@id=\"orderBookDeliveryTradedQty\"]")).getText();
             log.info("order book percent traded qty: {}", text);
             if (isValidText.test(text)) // todo: optimize with regex
-                refData.setPerTradedQty(Float.valueOf(text.replace(",", "").replace("%", "").trim()));
+                refData.setPerTradedQty(Double.valueOf(text.replace(",", "").replace("%", "").trim()));
 
             text = driver.findElement(By.xpath("//*[@id=\"orderBookAppMarRate\"]")).getText();
             log.info("order book applicable margin rate: {}", text);
             if (isValidText.test(text))
-                refData.setAppMarRate(Float.valueOf(text.replace(",", "")));
+                refData.setAppMarRate(Double.valueOf(text.replace(",", "")));
 
             text = driver.findElement(By.xpath("//*[@id=\"mainFaceValue\"]")).getText();
             log.info("order book face value: {}", text);
@@ -269,12 +268,12 @@ public class NSEService {
             text = driver.findElement(By.xpath("//*[@id=\"SectoralIndxPE\"]/../td[2]")).getText();
             log.info("adjusted P/E: {}", text);
             if (isValidText.test(text))
-                refData.setAdjustedPE(Float.valueOf(text.replace(",", "")));
+                refData.setAdjustedPE(Double.valueOf(text.replace(",", "")));
 
             text = driver.findElement(By.xpath("//*[@id=\"Symbol_PE\"]/../td[2]")).getText();
             log.info("symbol P/E: {}", text);
             if (isValidText.test(text))
-                refData.setSymbolPE(Float.valueOf(text.replace(",", "")));
+                refData.setSymbolPE(Double.valueOf(text.replace(",", "")));
 
             text = driver.findElement(By.xpath("//*[@id=\"Sectoral_Index\"]/../td[2]")).getText();
             log.info("sectoral index: {}", text);
