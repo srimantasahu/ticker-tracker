@@ -196,6 +196,11 @@ public class NSERepositoryImpl implements NSERepository {
             refDataMap.put("holding_patterns", refData.getShareholdingPatterns());
         }
 
+        if (refDataMap.isEmpty()) {
+            log.error("Skipping update as nothing scraped for symbol: {}", refData.getSymbol());
+            throw new RuntimeException("Empty RefData map");
+        }
+
         updateQuery.append("inst_updated_at = :inst_updated_at WHERE symbol = :symbol");
         refDataMap.put("inst_updated_at", Timestamp.valueOf(LocalDateTime.now()));
         refDataMap.put("symbol", refData.getSymbol());

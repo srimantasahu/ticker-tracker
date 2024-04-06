@@ -39,10 +39,16 @@ public class NSEService {
     private String downloadPath;
 
     @Value("${nse.download.wait.timeout}")
-    private int waitTimeout;
+    private int dwldWaitTimeout;
 
     @Value("${nse.download.poll.interval}")
-    private int pollInterval;
+    private int dwldPollInterval;
+
+    @Value("${nse.extract.wait.timeout}")
+    private int extWaitTimeout;
+
+    @Value("${nse.extract.poll.interval}")
+    private int extPollInterval;
 
     @Autowired
     private NSERepository nseRepository;
@@ -59,8 +65,8 @@ public class NSEService {
             driver.get("https://www.nseindia.com/market-data/live-equity-market?symbol=" + UrlEscapers.urlFragmentEscaper().escape(entity));
 
             FluentWait<WebDriver> wait = new FluentWait<>(driver);
-            wait.withTimeout(Duration.ofMillis(waitTimeout));
-            wait.pollingEvery(Duration.ofMillis(pollInterval));
+            wait.withTimeout(Duration.ofMillis(dwldWaitTimeout));
+            wait.pollingEvery(Duration.ofMillis(dwldPollInterval));
             wait.ignoring(NoSuchElementException.class);
 
             wait.until(d -> ((JavascriptExecutor) driver).executeScript("return document.readyState").equals("complete"));
@@ -146,179 +152,179 @@ public class NSEService {
             driver.get("https://www.nseindia.com/get-quotes/equity?symbol=" + UrlEscapers.urlFragmentEscaper().escape(symbol));
 
             FluentWait<WebDriver> wait = new FluentWait<>(driver);
-            wait.withTimeout(Duration.ofMillis(waitTimeout));
-            wait.pollingEvery(Duration.ofMillis(pollInterval));
+            wait.withTimeout(Duration.ofMillis(extWaitTimeout));
+            wait.pollingEvery(Duration.ofMillis(extPollInterval));
             wait.ignoring(NoSuchElementException.class);
+
+            Thread.sleep(5000);
 
             wait.until(d -> ((JavascriptExecutor) driver).executeScript("return document.readyState").equals("complete"));
 
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"orderbk\"]")));
-
-            Thread.sleep(10000);
+            waitUntil(wait, By.xpath("//*[@id=\"orderbk\"]"));
 
             final Predicate<String> isValidText = s -> StringUtils.isNotBlank(s) && !s.trim().equals("-");
 
-            String text = driver.findElement(By.xpath("//*[@id=\"orderBuyTq\"]")).getText();
+            String text = getText(driver, By.xpath("//*[@id=\"orderBuyTq\"]"));
 
             log.info("order book buy qty: {}", text);
             if (isValidText.test(text))
                 refData.setBuyQty(Long.parseLong(text.replace(",", "")));
 
-            text = driver.findElement(By.xpath("//*[@id=\"orderSellTq\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"orderSellTq\"]"));
             log.info("order book sell qty: {}", text);
             if (isValidText.test(text))
                 refData.setSellQty(Long.parseLong(text.replace(",", "")));
 
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"Trade_Information_pg\"]")));
+            waitUntil(wait, By.xpath("//*[@id=\"Trade_Information_pg\"]"));
 
-            text = driver.findElement(By.xpath("//*[@id=\"orderBookTradeVol\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"orderBookTradeVol\"]"));
             log.info("order book trade vol in lk: {}", text);
             if (isValidText.test(text))
                 refData.setTradeVolInLk(Double.valueOf(text.replace(",", "")));
 
-            text = driver.findElement(By.xpath("//*[@id=\"orderBookTradeVal\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"orderBookTradeVal\"]"));
             log.info("order book trade value in cr: {}", text);
             if (isValidText.test(text))
                 refData.setTradeValInCr(Double.valueOf(text.replace(",", "")));
 
-            text = driver.findElement(By.xpath("//*[@id=\"orderBookTradeTMC\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"orderBookTradeTMC\"]"));
             log.info("order book total market cap in cr: {}", text);
             if (isValidText.test(text))
                 refData.setTotMarCapInCr(Double.valueOf(text.replace(",", "")));
 
-            text = driver.findElement(By.xpath("//*[@id=\"orderBookTradeFFMC\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"orderBookTradeFFMC\"]"));
             log.info("order book free float market cap in cr: {}", text);
             if (isValidText.test(text))
                 refData.setFfMarCapInCr(Double.valueOf(text.replace(",", "")));
 
-            text = driver.findElement(By.xpath("//*[@id=\"orderBookTradeIC\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"orderBookTradeIC\"]"));
             log.info("order book impact cost: {}", text);
             if (isValidText.test(text))
                 refData.setImpactCost(Double.valueOf(text.replace(",", "")));
 
-            text = driver.findElement(By.xpath("//*[@id=\"orderBookDeliveryTradedQty\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"orderBookDeliveryTradedQty\"]"));
             log.info("order book percent traded qty: {}", text);
             if (isValidText.test(text)) // todo: optimize with regex
                 refData.setPerTradedQty(Double.valueOf(text.replace(",", "").replace("%", "").trim()));
 
-            text = driver.findElement(By.xpath("//*[@id=\"orderBookAppMarRate\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"orderBookAppMarRate\"]"));
             log.info("order book applicable margin rate: {}", text);
             if (isValidText.test(text))
                 refData.setAppMarRate(Double.valueOf(text.replace(",", "")));
 
-            text = driver.findElement(By.xpath("//*[@id=\"mainFaceValue\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"mainFaceValue\"]"));
             log.info("order book face value: {}", text);
             if (isValidText.test(text))
                 refData.setFaceValue(Integer.valueOf(text.replace(",", "")));
 
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"priceInformationHeading\"]")));
+            waitUntil(wait, By.xpath("//*[@id=\"priceInformationHeading\"]"));
 
-            text = driver.findElement(By.xpath("//*[@id=\"week52highVal\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"week52highVal\"]"));
             log.info("52 week high: {}", text);
             if (isValidText.test(text))
                 refData.setHigh52(Double.valueOf(text.replace(",", "")));
 
-            text = driver.findElement(By.xpath("//*[@id=\"week52HighDate\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"week52HighDate\"]"));
             log.info("52 week high date: {}", text);
             if (isValidText.test(text)) //todo: optimize regex n create const for pattern
                 refData.setHigh52Dt(LocalDate.parse(text.replace("(", "").replace(")", ""), DateTimeFormatter.ofPattern("dd-MMM-yyyy")));
 
-            text = driver.findElement(By.xpath("//*[@id=\"week52lowVal\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"week52lowVal\"]"));
             log.info("52 week low: {}", text);
             if (isValidText.test(text))
                 refData.setLow52(Double.valueOf(text.replace(",", "")));
 
-            text = driver.findElement(By.xpath("//*[@id=\"week52LowDate\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"week52LowDate\"]"));
             log.info("52 week low date: {}", text);
             if (isValidText.test(text))
                 refData.setLow52Dt(LocalDate.parse(text.replace("(", "").replace(")", ""), DateTimeFormatter.ofPattern("dd-MMM-yyyy")));
 
-            text = driver.findElement(By.xpath("//*[@id=\"upperbandVal\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"upperbandVal\"]"));
             log.info("upper band: {}", text);
             if (isValidText.test(text))
                 refData.setUpperBand(Double.valueOf(text.replace(",", "")));
 
-            text = driver.findElement(By.xpath("//*[@id=\"lowerbandVal\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"lowerbandVal\"]"));
             log.info("lower band: {}", text);
             if (isValidText.test(text))
                 refData.setLowerBand(Double.valueOf(text.replace(",", "")));
 
-            text = driver.findElement(By.xpath("//*[@id=\"pricebandVal\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"pricebandVal\"]"));
             log.info("price band: {}", text);
             if (isValidText.test(text))
                 refData.setPriceBand(text);
 
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"Securities_Info_New\"]")));
+            waitUntil(wait, By.xpath("//*[@id=\"Securities_Info_New\"]"));
 
-            text = driver.findElement(By.xpath("//*[@id=\"status\"]/../td[2]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"status\"]/../td[2]"));
             log.info("status listed: {}", text);
             if (isValidText.test(text))
                 refData.setListedStatus(text);
 
-            text = driver.findElement(By.xpath("//*[@id=\"TradingStatus\"]/../td[2]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"TradingStatus\"]/../td[2]"));
             log.info("trading status: {}", text);
             if (isValidText.test(text))
                 refData.setTradingStatus(text);
 
-            text = driver.findElement(By.xpath("//*[@id=\"Date_of_Listing\"]/../td[2]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"Date_of_Listing\"]/../td[2]"));
             log.info("listing date: {}", text);
             if (isValidText.test(text))
                 refData.setListedDt(LocalDate.parse(text, DateTimeFormatter.ofPattern("dd-MMM-yyyy")));
 
-            text = driver.findElement(By.xpath("//*[@id=\"SectoralIndxPE\"]/../td[2]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"SectoralIndxPE\"]/../td[2]"));
             log.info("adjusted P/E: {}", text);
             if (isValidText.test(text))
                 refData.setAdjustedPE(Double.valueOf(text.replace(",", "")));
 
-            text = driver.findElement(By.xpath("//*[@id=\"Symbol_PE\"]/../td[2]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"Symbol_PE\"]/../td[2]"));
             log.info("symbol P/E: {}", text);
             if (isValidText.test(text))
                 refData.setSymbolPE(Double.valueOf(text.replace(",", "")));
 
-            text = driver.findElement(By.xpath("//*[@id=\"Sectoral_Index\"]/../td[2]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"Sectoral_Index\"]/../td[2]"));
             log.info("sectoral index: {}", text);
             if (isValidText.test(text))
                 refData.setSectoralIndex(text);
 
-            text = driver.findElement(By.xpath("//*[@id=\"BasicIndustry\"]/../../td[2]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"BasicIndustry\"]/../../td[2]"));
             log.info("basic industry: {}", text);
             if (isValidText.test(text))
                 refData.setBasicIndustry(text);
 
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"more_securities_info_table\"]")));
+            waitUntil(wait, By.xpath("//*[@id=\"BoardStatus\"]"));
 
-            text = driver.findElement(By.xpath("//*[@id=\"BoardStatus\"]/../td[2]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"BoardStatus\"]/../td[2]"));
             log.info("board status: {}", text);
             if (isValidText.test(text))
                 refData.setBoardStatus(text);
 
-            text = driver.findElement(By.xpath("//*[@id=\"TradingSegment\"]/../td[2]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"TradingSegment\"]/../td[2]"));
             log.info("trading segment: {}", text);
             if (isValidText.test(text))
                 refData.setTradingSegment(text);
 
-            text = driver.findElement(By.xpath("//*[@id=\"ClassShares\"]/../td[2]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"ClassShares\"]/../td[2]"));
             log.info("class of shares: {}", text);
             if (isValidText.test(text))
                 refData.setSharesClass(text);
 
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"topCorpActionTable\"]")));
+            waitUntil(wait, By.xpath("//*[@id=\"topCorpActionTable\"]"));
 
-            text = driver.findElement(By.xpath("//*[@id=\"topCorpActionTable\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"topCorpActionTable\"]"));
             log.info("corp actions: \n{}", text);
             if (isValidText.test(text))
                 refData.setCorpActions(text.split("\n"));
 
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"topFinancialResultsTable\"]")));
+            waitUntil(wait, By.xpath("//*[@id=\"topFinancialResultsTable\"]"));
 
-            text = driver.findElement(By.xpath("//*[@id=\"topFinancialResultsTable\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"topFinancialResultsTable\"]"));
             log.info("financial results \n{}", text);
             if (isValidText.test(text))
                 refData.setFinancialResults(text.split("\n"));
 
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"tabletopSHP\"]")));
+            waitUntil(wait, By.xpath("//*[@id=\"tabletopSHP\"]"));
 
-            text = driver.findElement(By.xpath("//*[@id=\"tabletopSHP\"]")).getText();
+            text = getText(driver, By.xpath("//*[@id=\"tabletopSHP\"]"));
             log.info("shareholding patterns: \n{}", text);
             if (isValidText.test(text))
                 refData.setShareholdingPatterns(text.split("\n"));
@@ -332,6 +338,24 @@ public class NSEService {
         }
 
         return refData;
+    }
+
+    private void waitUntil(FluentWait<WebDriver> wait, By by) {
+        try {
+            wait.until(ExpectedConditions.presenceOfElementLocated(by));
+        } catch (Exception e) {
+            log.warn("Error waiting for element: {}", by);
+        }
+
+    }
+
+    private String getText(WebDriver driver, By by) {
+        try {
+            return driver.findElement(by).getText();
+        } catch (Exception e) {
+            log.warn("Couldn't find element for : {}", by.toString());
+            return null;
+        }
     }
 
     public StatusMessage reloadStocksData() {
