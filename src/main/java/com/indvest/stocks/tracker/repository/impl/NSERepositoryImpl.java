@@ -79,10 +79,6 @@ public class NSERepositoryImpl implements NSERepository {
             updateQuery.append("sell_qty = :sell_qty, ");
             refDataMap.put("sell_qty", refData.getSellQty());
         }
-        if (refData.getSellQty() != null) {
-            updateQuery.append("sell_qty = :sell_qty, ");
-            refDataMap.put("sell_qty", refData.getSellQty());
-        }
         if (refData.getTradeVolInLk() != null) {
             updateQuery.append("volume_sh = :volume_sh, ");
             refDataMap.put("volume_sh", refData.getTradeVolInLk() * 100_000);
@@ -197,8 +193,8 @@ public class NSERepositoryImpl implements NSERepository {
         }
 
         if (refDataMap.isEmpty()) {
-            log.error("Skipping update as nothing scraped for symbol: {}", refData.getSymbol());
-            throw new RuntimeException("Empty RefData map");
+            log.error("Update skipped as nothing scraped for symbol: {}", refData.getSymbol());
+            throw new RuntimeException("Ref data not found");
         }
 
         updateQuery.append("inst_updated_at = :inst_updated_at WHERE symbol = :symbol");

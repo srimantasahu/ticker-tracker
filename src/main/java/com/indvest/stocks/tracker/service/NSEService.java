@@ -4,6 +4,7 @@ import com.google.common.net.UrlEscapers;
 import com.indvest.stocks.tracker.bean.RefData;
 import com.indvest.stocks.tracker.bean.Status;
 import com.indvest.stocks.tracker.bean.StatusMessage;
+import com.indvest.stocks.tracker.constant.AppConstant;
 import com.indvest.stocks.tracker.repository.NSERepository;
 import com.indvest.stocks.tracker.util.CommonUtil;
 import com.indvest.stocks.tracker.util.SeleniumUtil;
@@ -11,6 +12,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.slf4j.Logger;
@@ -25,10 +27,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 
 @Service
@@ -163,91 +162,92 @@ public class NSEService {
             waitUntil(wait, By.xpath("//*[@id=\"orderbk\"]"));
 
             final Predicate<String> isValidText = s -> StringUtils.isNotBlank(s) && !s.trim().equals("-");
+            final Predicate<String> isValidPercentage = s -> StringUtils.isNotBlank(s) && !s.replace("%", StringUtils.EMPTY).trim().equals("-");
 
             String text = getText(driver, By.xpath("//*[@id=\"orderBuyTq\"]"));
 
             log.info("order book buy qty: {}", text);
             if (isValidText.test(text))
-                refData.setBuyQty(Long.parseLong(text.replace(",", "")));
+                refData.setBuyQty(Long.parseLong(text.replace(",", StringUtils.EMPTY)));
 
             text = getText(driver, By.xpath("//*[@id=\"orderSellTq\"]"));
             log.info("order book sell qty: {}", text);
             if (isValidText.test(text))
-                refData.setSellQty(Long.parseLong(text.replace(",", "")));
+                refData.setSellQty(Long.parseLong(text.replace(",", StringUtils.EMPTY)));
 
             waitUntil(wait, By.xpath("//*[@id=\"Trade_Information_pg\"]"));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookTradeVol\"]"));
             log.info("order book trade vol in lk: {}", text);
             if (isValidText.test(text))
-                refData.setTradeVolInLk(Double.valueOf(text.replace(",", "")));
+                refData.setTradeVolInLk(Double.valueOf(text.replace(",", StringUtils.EMPTY)));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookTradeVal\"]"));
             log.info("order book trade value in cr: {}", text);
             if (isValidText.test(text))
-                refData.setTradeValInCr(Double.valueOf(text.replace(",", "")));
+                refData.setTradeValInCr(Double.valueOf(text.replace(",", StringUtils.EMPTY)));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookTradeTMC\"]"));
             log.info("order book total market cap in cr: {}", text);
             if (isValidText.test(text))
-                refData.setTotMarCapInCr(Double.valueOf(text.replace(",", "")));
+                refData.setTotMarCapInCr(Double.valueOf(text.replace(",", StringUtils.EMPTY)));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookTradeFFMC\"]"));
             log.info("order book free float market cap in cr: {}", text);
             if (isValidText.test(text))
-                refData.setFfMarCapInCr(Double.valueOf(text.replace(",", "")));
+                refData.setFfMarCapInCr(Double.valueOf(text.replace(",", StringUtils.EMPTY)));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookTradeIC\"]"));
             log.info("order book impact cost: {}", text);
             if (isValidText.test(text))
-                refData.setImpactCost(Double.valueOf(text.replace(",", "")));
+                refData.setImpactCost(Double.valueOf(text.replace(",", StringUtils.EMPTY)));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookDeliveryTradedQty\"]"));
             log.info("order book percent traded qty: {}", text);
-            if (isValidText.test(text)) // todo: optimize with regex
-                refData.setPerTradedQty(Double.valueOf(text.replace(",", "").replace("%", "").trim()));
+            if (isValidPercentage.test(text))
+                refData.setPerTradedQty(Double.valueOf(text.replaceAll("[,%]", StringUtils.EMPTY).trim()));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookAppMarRate\"]"));
             log.info("order book applicable margin rate: {}", text);
             if (isValidText.test(text))
-                refData.setAppMarRate(Double.valueOf(text.replace(",", "")));
+                refData.setAppMarRate(Double.valueOf(text.replace(",", StringUtils.EMPTY)));
 
             text = getText(driver, By.xpath("//*[@id=\"mainFaceValue\"]"));
             log.info("order book face value: {}", text);
             if (isValidText.test(text))
-                refData.setFaceValue(Integer.valueOf(text.replace(",", "")));
+                refData.setFaceValue(Integer.valueOf(text.replace(",", StringUtils.EMPTY)));
 
             waitUntil(wait, By.xpath("//*[@id=\"priceInformationHeading\"]"));
 
             text = getText(driver, By.xpath("//*[@id=\"week52highVal\"]"));
             log.info("52 week high: {}", text);
             if (isValidText.test(text))
-                refData.setHigh52(Double.valueOf(text.replace(",", "")));
+                refData.setHigh52(Double.valueOf(text.replace(",", StringUtils.EMPTY)));
 
             text = getText(driver, By.xpath("//*[@id=\"week52HighDate\"]"));
             log.info("52 week high date: {}", text);
-            if (isValidText.test(text)) //todo: optimize regex n create const for pattern
-                refData.setHigh52Dt(LocalDate.parse(text.replace("(", "").replace(")", ""), DateTimeFormatter.ofPattern("dd-MMM-yyyy")));
+            if (isValidText.test(text))
+                refData.setHigh52Dt(LocalDate.parse(text.replaceAll("[()]", StringUtils.EMPTY), AppConstant.DATE_FORMATTER));
 
             text = getText(driver, By.xpath("//*[@id=\"week52lowVal\"]"));
             log.info("52 week low: {}", text);
             if (isValidText.test(text))
-                refData.setLow52(Double.valueOf(text.replace(",", "")));
+                refData.setLow52(Double.valueOf(text.replace(",", StringUtils.EMPTY)));
 
             text = getText(driver, By.xpath("//*[@id=\"week52LowDate\"]"));
             log.info("52 week low date: {}", text);
             if (isValidText.test(text))
-                refData.setLow52Dt(LocalDate.parse(text.replace("(", "").replace(")", ""), DateTimeFormatter.ofPattern("dd-MMM-yyyy")));
+                refData.setLow52Dt(LocalDate.parse(text.replaceAll("[()]", StringUtils.EMPTY), AppConstant.DATE_FORMATTER));
 
             text = getText(driver, By.xpath("//*[@id=\"upperbandVal\"]"));
             log.info("upper band: {}", text);
             if (isValidText.test(text))
-                refData.setUpperBand(Double.valueOf(text.replace(",", "")));
+                refData.setUpperBand(Double.valueOf(text.replace(",", StringUtils.EMPTY)));
 
             text = getText(driver, By.xpath("//*[@id=\"lowerbandVal\"]"));
             log.info("lower band: {}", text);
             if (isValidText.test(text))
-                refData.setLowerBand(Double.valueOf(text.replace(",", "")));
+                refData.setLowerBand(Double.valueOf(text.replace(",", StringUtils.EMPTY)));
 
             text = getText(driver, By.xpath("//*[@id=\"pricebandVal\"]"));
             log.info("price band: {}", text);
@@ -269,17 +269,17 @@ public class NSEService {
             text = getText(driver, By.xpath("//*[@id=\"Date_of_Listing\"]/../td[2]"));
             log.info("listing date: {}", text);
             if (isValidText.test(text))
-                refData.setListedDt(LocalDate.parse(text, DateTimeFormatter.ofPattern("dd-MMM-yyyy")));
+                refData.setListedDt(LocalDate.parse(text, AppConstant.DATE_FORMATTER));
 
             text = getText(driver, By.xpath("//*[@id=\"SectoralIndxPE\"]/../td[2]"));
             log.info("adjusted P/E: {}", text);
             if (isValidText.test(text))
-                refData.setAdjustedPE(Double.valueOf(text.replace(",", "")));
+                refData.setAdjustedPE(Double.valueOf(text.replace(",", StringUtils.EMPTY)));
 
             text = getText(driver, By.xpath("//*[@id=\"Symbol_PE\"]/../td[2]"));
             log.info("symbol P/E: {}", text);
             if (isValidText.test(text))
-                refData.setSymbolPE(Double.valueOf(text.replace(",", "")));
+                refData.setSymbolPE(Double.valueOf(text.replace(",", StringUtils.EMPTY)));
 
             text = getText(driver, By.xpath("//*[@id=\"Sectoral_Index\"]/../td[2]"));
             log.info("sectoral index: {}", text);
@@ -374,7 +374,7 @@ public class NSEService {
 
             if (nextLine != null) { // header row
                 for (String header : nextLine) {
-                    String fHeader = header.replace("%", "PER").replaceAll("\\W|(?i)(shares|Crores)", "");
+                    String fHeader = header.replace("%", "PER").replaceAll("\\W|(?i)(shares|Crores)", StringUtils.EMPTY);
                     headers.add(fHeader.contains("365DPERCHNG") ? "365DPERCHNG" : fHeader);
                 }
                 // Read and process each line of the CSV file
@@ -384,7 +384,7 @@ public class NSEService {
                     }
                     Map<String, String> rowMap = new HashMap<>();
                     for (int i = 0; i < headers.size(); i++) {
-                        rowMap.put(headers.get(i), nextLine[i].replace(",", ""));
+                        rowMap.put(headers.get(i), nextLine[i].replace(",", StringUtils.EMPTY));
                     }
                     refDataList.add(rowMap);
                 }
