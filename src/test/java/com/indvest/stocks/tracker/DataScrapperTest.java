@@ -87,7 +87,7 @@ public class DataScrapperTest {
     void nifty50DownloadTest() {
         System.out.println("Starting...");
 
-       String expectedFileName = "/Users/srimantasahu/Downloads/" + "MW-NIFTY-50-" + LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MMM-yyyy")) + ".csv";
+        String expectedFileName = "/Users/srimantasahu/Downloads/" + "MW-NIFTY-50-" + LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MMM-yyyy")) + ".csv";
 
         // defining the options to run Chrome in headless mode
         ChromeOptions options = new ChromeOptions();
