@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS stocks.refdata
 	buy_qty bigint,
     sell_qty bigint,
     per_traded_qty double precision,
-    volume_sh bigint,
+    volume_lk double precision,
     value_cr double precision,
 	tot_mar_cap_cr double precision,
     ff_mar_cap_cr double precision,
@@ -93,8 +93,8 @@ ALTER TABLE IF EXISTS stocks.refdata
 
 
 INSERT INTO stocks.refdata(
-	symbol, ltp, chng, per_chng, open, high, low, prev_close, volume_sh, value_cr, high_52w, low_52w, per_chng_30d, per_chng_365d)
-	VALUES ('TEST', 123.23, 2.1, 1.2, 120.5, 125.6, 122, 119.8, 12345, 123456.01, 159.4, 55.6, -18.2, 123.4)
+	symbol, ltp, chng, per_chng, open, high, low, prev_close, volume_lk, value_cr, high_52w, low_52w, per_chng_30d, per_chng_365d)
+	VALUES ('TEST', 123.23, 2.1, 1.2, 120.5, 125.6, 122, 119.8, 1.2345, 123456.01, 159.4, 55.6, -18.2, 123.4)
 ON CONFLICT (symbol) DO UPDATE SET ltp = 123.24, chng = 2.11;
 
 

@@ -31,10 +31,10 @@ public class NSERepositoryImpl implements NSERepository {
         log.info("Saving RefData list of size: {}", refDataList.size());
 
         final String upsertQuery = String.join(" ",
-                "INSERT INTO stocks.refdata(symbol, ltp, chng, per_chng, open, high, low, prev_close, volume_sh, value_cr, high_52w, low_52w, per_chng_30d, per_chng_365d)",
-                "VALUES(:symbol, :ltp, :chng, :per_chng, :open, :high, :low, :prev_close, :volume_sh, :value_cr, :high_52w, :low_52w, :per_chng_30d, :per_chng_365d)",
+                "INSERT INTO stocks.refdata(symbol, ltp, chng, per_chng, open, high, low, prev_close, volume_lk, value_cr, high_52w, low_52w, per_chng_30d, per_chng_365d)",
+                "VALUES(:symbol, :ltp, :chng, :per_chng, :open, :high, :low, :prev_close, :volume_lk, :value_cr, :high_52w, :low_52w, :per_chng_30d, :per_chng_365d)",
                 "ON CONFLICT (symbol)",
-                "DO UPDATE SET ltp = :ltp, chng = :chng, per_chng = :per_chng, open = :open, high = :high, low = :low, prev_close = :prev_close, volume_sh = :volume_sh, value_cr = :value_cr,",
+                "DO UPDATE SET ltp = :ltp, chng = :chng, per_chng = :per_chng, open = :open, high = :high, low = :low, prev_close = :prev_close, volume_lk = :volume_lk, value_cr = :value_cr,",
                 "high_52w = :high_52w, low_52w = :low_52w, per_chng_30d = :per_chng_30d, per_chng_365d = :per_chng_365d, file_updated_at = :file_updated_at");
 
         List<Map<String, Object>> refDataMap = refDataList.stream().map(refData -> {
@@ -47,7 +47,7 @@ public class NSERepositoryImpl implements NSERepository {
             map.put("high", Double.parseDouble(refData.get("HIGH")));
             map.put("low", Double.parseDouble(refData.get("LOW")));
             map.put("prev_close", Double.parseDouble(refData.get("PREVCLOSE")));
-            map.put("volume_sh", Long.parseLong(refData.get("VOLUME")));
+            map.put("volume_lk", Long.parseLong(refData.get("VOLUME")) / 100_000D);
             map.put("value_cr", Double.parseDouble(refData.get("VALUE")));
             map.put("high_52w", Double.parseDouble(refData.get("52WH")));
             map.put("low_52w", Double.parseDouble(refData.get("52WL")));
@@ -79,8 +79,8 @@ public class NSERepositoryImpl implements NSERepository {
             refDataMap.put("sell_qty", refData.getSellQty());
         }
         if (refData.getTradeVolInLk() != null) {
-            updateQuery.append("volume_sh = :volume_sh, ");
-            refDataMap.put("volume_sh", refData.getTradeVolInLk() * 100_000);
+            updateQuery.append("volume_lk = :volume_lk, ");
+            refDataMap.put("volume_lk", refData.getTradeVolInLk());
         }
         if (refData.getTradeValInCr() != null) {
             updateQuery.append("value_cr = :value_cr, ");

@@ -189,7 +189,7 @@ public class DataScrapperTest {
         String user = "postgres";
         String password = "password";
 
-        String query = "INSERT INTO stocks.refdata(symbol, ltp, chng, percent_chng, open, high, low, prev_close, volume_sh, value_cr, high_52w, low_52w, percent_chng_30d, percent_chng_365d) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO stocks.refdata(symbol, ltp, chng, percent_chng, open, high, low, prev_close, volume_lk, value_cr, high_52w, low_52w, percent_chng_30d, percent_chng_365d) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection con = DriverManager.getConnection(url, user, password);
              PreparedStatement pst = con.prepareStatement(query)) {
@@ -328,7 +328,7 @@ public class DataScrapperTest {
         String user = "postgres";
         String password = "password";
 
-        String query = "INSERT INTO stocks.refdata(symbol, ltp, chng, percent_chng, open, high, low, prev_close, volume_sh, value_cr, high_52w, low_52w, percent_chng_30d, percent_chng_365d) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO stocks.refdata(symbol, ltp, chng, percent_chng, open, high, low, prev_close, volume_lk, value_cr, high_52w, low_52w, percent_chng_30d, percent_chng_365d) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection con = DriverManager.getConnection(url, user, password);
              PreparedStatement pst = con.prepareStatement(query)) {
