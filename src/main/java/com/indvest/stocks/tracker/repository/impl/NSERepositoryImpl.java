@@ -200,6 +200,11 @@ public class NSERepositoryImpl implements NSERepository {
             throw new RuntimeException("Ref data not found");
         }
 
+        if (refData.getIsin() != null) {
+            updateQuery.append("isin = :isin, ");
+            refDataMap.put("isin", refData.getIsin());
+        }
+
         updateQuery.append("inst_updated_at = :inst_updated_at WHERE symbol = :symbol");
         refDataMap.put("inst_updated_at", Timestamp.valueOf(LocalDateTime.now()));
         refDataMap.put("symbol", refData.getSymbol());
