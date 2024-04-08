@@ -11,4 +11,6 @@ public interface NSERepository {
     void save(List<Map<String, String>> refDataList);
 
     void save(RefData refData);
+
+    List<String> getAll();
 }

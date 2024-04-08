@@ -43,11 +43,11 @@ public class NSEController {
         return new Response(symbol, statusMessage.status(), statusMessage.message());
     }
 
-    @GetMapping("reload")
-    public Response reload() {
-        log.info("Request received for reloading instruments");
-        StatusMessage statusMessage = nseService.reloadStocksData();
-        log.info("Reloading of instruments resulted: {}, with message: {}", statusMessage.status(), statusMessage.message());
+    @GetMapping("refresh")
+    public Response refresh() {
+        log.info("Request received for refreshing instruments");
+        StatusMessage statusMessage = nseService.refreshStocksData();
+        log.info("Refreshing of instruments resulted: {}, with message: {}", statusMessage.status(), statusMessage.message());
         return new Response("ALL", statusMessage.status(), statusMessage.message());
     }
 

@@ -6,6 +6,7 @@ import java.util.Arrays;
 public class RefData {
 
     private String symbol;
+    private String isin;
     private Long buyQty;
     private Long sellQty;
 
@@ -46,6 +47,14 @@ public class RefData {
 
     public RefData(String symbol) {
         this.symbol = symbol;
+    }
+
+    public String getIsin() {
+        return isin;
+    }
+
+    public void setIsin(String isin) {
+        this.isin = isin;
     }
 
     public String getSymbol() {

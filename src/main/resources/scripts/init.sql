@@ -38,6 +38,7 @@ CREATE SCHEMA IF NOT EXISTS stocks
 CREATE TABLE IF NOT EXISTS stocks.refdata
 (
     symbol character varying(25) COLLATE pg_catalog."default" NOT NULL,
+    isin character(12),
     ltp double precision NOT NULL,
     low_52w double precision NOT NULL,
     high_52w double precision NOT NULL,

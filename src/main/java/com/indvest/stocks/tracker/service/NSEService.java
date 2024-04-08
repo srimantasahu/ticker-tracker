@@ -5,10 +5,10 @@ import com.indvest.stocks.tracker.bean.RefData;
 import com.indvest.stocks.tracker.bean.Status;
 import com.indvest.stocks.tracker.bean.StatusMessage;
 import com.indvest.stocks.tracker.repository.NSERepository;
-import com.indvest.stocks.tracker.util.CommonUtil;
-import com.indvest.stocks.tracker.util.SeleniumUtil;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
@@ -22,14 +22,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import static com.indvest.stocks.tracker.constant.AppConstant.DATE_FORMATTER;
+import static com.indvest.stocks.tracker.util.CommonUtil.*;
+import static com.indvest.stocks.tracker.util.SeleniumUtil.*;
 import static org.apache.commons.lang3.StringUtils.*;
 
 @Service
@@ -59,7 +59,7 @@ public class NSEService {
             return new StatusMessage(Status.INVALID_INPUT, "Require a value for entity");
         }
 
-        WebDriver driver = SeleniumUtil.getWebDriver(downloadPath, false);
+        WebDriver driver = getWebDriver(downloadPath, false);
 
         try {
             // connecting to the target web page
@@ -74,7 +74,7 @@ public class NSEService {
 
             wait.until(ExpectedConditions.presenceOfElementLocated(By.id("dwldcsv")));
 
-            final String expectedFileName = downloadPath + CommonUtil.getNSEFileName(entity);
+            final String expectedFileName = downloadPath + getNSEFileName(entity);
 
             log.info("Checking old file for: {}", expectedFileName);
 
@@ -110,13 +110,11 @@ public class NSEService {
             return new StatusMessage(Status.INVALID_INPUT, "Require a value for entity");
         }
 
-
-        final String expectedFileName = downloadPath + CommonUtil.getNSEFileName(entity);
+        final String expectedFileName = downloadPath + getNSEFileName(entity);
 
         try {
             List<Map<String, String>> refDataList = loadRefData(expectedFileName);
             log.info("Extracted ref data list size: {}", refDataList.size());
-
             nseRepository.save(refDataList);
         } catch (Exception e) {
             log.error("Error message: {}", e.getMessage());
@@ -127,10 +125,10 @@ public class NSEService {
     }
 
     public StatusMessage loadStocksData(String symbol) {
+        log.info("Loading Ref data for: {}", symbol);
         if (isBlank(symbol)) {
             return new StatusMessage(Status.INVALID_INPUT, "Require a value for symbol");
         }
-
         try {
             final RefData refData = extractRefData(symbol);
 
@@ -143,10 +141,33 @@ public class NSEService {
         return new StatusMessage(Status.SUCCESS, "Ref data loaded successfully");
     }
 
+    public StatusMessage refreshStocksData() {
+        log.info("Refreshing all instrument ref data");
+        try {
+            final List<String> instruments = nseRepository.getAll();
+
+            if (CollectionUtils.isNotEmpty(instruments)) {
+                log.info("Refreshing Ref data for: {} instruments", instruments.size());
+                for (int i = 0; i < instruments.size(); i++) {
+                    loadStocksData(instruments.get(i));
+                    if (i % 11 == 10) {
+                        break;
+                    }
+                    log.info("Loaded instruments count: {}", i + 1);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error message: {}", e.getMessage());
+            return new StatusMessage(Status.ERROR, e.getMessage());
+        }
+
+        return new StatusMessage(Status.SUCCESS, "Ref data refreshed successfully");
+    }
+
     private RefData extractRefData(String symbol) throws Exception {
         final RefData refData = new RefData(symbol);
 
-        WebDriver driver = SeleniumUtil.getWebDriver(downloadPath, false);
+        WebDriver driver = getWebDriver(downloadPath, false);
 
         try {
             // connecting to the target web page
@@ -157,106 +178,107 @@ public class NSEService {
             wait.pollingEvery(Duration.ofMillis(extPollInterval));
             wait.ignoring(NoSuchElementException.class);
 
-            Thread.sleep(5000);
+            //FIXME: check why it's not ready for execution everytime
+            Thread.sleep(3000);
 
             wait.until(d -> ((JavascriptExecutor) driver).executeScript("return document.readyState").equals("complete"));
 
-            waitUntil(wait, By.xpath("//*[@id=\"orderbk\"]"));
+            waitUntil(wait, By.xpath("//*[@id=\"quoteName\"]"));
+            waitUntil(wait, By.xpath("//*[@id=\"week52lowVal\"]"));
+            waitUntil(wait, By.xpath("//*[@id=\"Symbol_PE\"]/../td[2]"));
 
             final Predicate<String> isValidText = s -> isNotBlank(s) && !s.trim().equals("-");
-            final Predicate<String> isValidPercentage = s -> isNotBlank(s) && !s.replace("%", EMPTY).trim().equals("-");
 
-            String text = getText(driver, By.xpath("//*[@id=\"orderBuyTq\"]"));
+            String text = getText(driver, By.xpath("//*[@id=\"quoteName\"]"));
 
+            log.info("Instrument Name & ISIN: {}", text);
+            if (isValidText.test(text))
+                refData.setIsin(StringUtils.substringBetween(text, "(", ")"));
+
+            text = getText(driver, By.xpath("//*[@id=\"orderBuyTq\"]"));
             log.info("order book buy qty: {}", text);
             if (isValidText.test(text))
-                refData.setBuyQty(Long.parseLong(text.replace(",", EMPTY)));
+                refData.setBuyQty(parseLong(text));
 
             text = getText(driver, By.xpath("//*[@id=\"orderSellTq\"]"));
             log.info("order book sell qty: {}", text);
             if (isValidText.test(text))
-                refData.setSellQty(Long.parseLong(text.replace(",", EMPTY)));
-
-            waitUntil(wait, By.xpath("//*[@id=\"Trade_Information_pg\"]"));
+                refData.setSellQty(parseLong(text));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookTradeVol\"]"));
             log.info("order book trade vol in lk: {}", text);
             if (isValidText.test(text))
-                refData.setTradeVolInLk(Double.valueOf(text.replace(",", EMPTY)));
+                refData.setTradeVolInLk(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookTradeVal\"]"));
             log.info("order book trade value in cr: {}", text);
             if (isValidText.test(text))
-                refData.setTradeValInCr(Double.valueOf(text.replace(",", EMPTY)));
+                refData.setTradeValInCr(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookTradeTMC\"]"));
             log.info("order book total market cap in cr: {}", text);
             if (isValidText.test(text))
-                refData.setTotMarCapInCr(Double.valueOf(text.replace(",", EMPTY)));
+                refData.setTotMarCapInCr(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookTradeFFMC\"]"));
             log.info("order book free float market cap in cr: {}", text);
             if (isValidText.test(text))
-                refData.setFfMarCapInCr(Double.valueOf(text.replace(",", EMPTY)));
+                refData.setFfMarCapInCr(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookTradeIC\"]"));
             log.info("order book impact cost: {}", text);
             if (isValidText.test(text))
-                refData.setImpactCost(Double.valueOf(text.replace(",", EMPTY)));
+                refData.setImpactCost(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookDeliveryTradedQty\"]"));
             log.info("order book percent traded qty: {}", text);
-            if (isValidPercentage.test(text))
-                refData.setPerTradedQty(Double.valueOf(text.replaceAll("[,%]", EMPTY).trim()));
+            if (isValidText.test(text))
+                refData.setPerTradedQty(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookAppMarRate\"]"));
             log.info("order book applicable margin rate: {}", text);
             if (isValidText.test(text))
-                refData.setAppMarRate(Double.valueOf(text.replace(",", EMPTY)));
+                refData.setAppMarRate(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"mainFaceValue\"]"));
             log.info("order book face value: {}", text);
             if (isValidText.test(text))
-                refData.setFaceValue(Integer.valueOf(text.replace(",", EMPTY)));
-
-            waitUntil(wait, By.xpath("//*[@id=\"priceInformationHeading\"]"));
+                refData.setFaceValue(parseInt(text));
 
             text = getText(driver, By.xpath("//*[@id=\"week52highVal\"]"));
             log.info("52 week high: {}", text);
             if (isValidText.test(text))
-                refData.setHigh52(Double.valueOf(text.replace(",", EMPTY)));
+                refData.setHigh52(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"week52HighDate\"]"));
             log.info("52 week high date: {}", text);
             if (isValidText.test(text))
-                refData.setHigh52Dt(LocalDate.parse(text.replaceAll("[()]", EMPTY), DATE_FORMATTER));
+                refData.setHigh52Dt(parseDate(text));
 
             text = getText(driver, By.xpath("//*[@id=\"week52lowVal\"]"));
             log.info("52 week low: {}", text);
             if (isValidText.test(text))
-                refData.setLow52(Double.valueOf(text.replace(",", EMPTY)));
+                refData.setLow52(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"week52LowDate\"]"));
             log.info("52 week low date: {}", text);
             if (isValidText.test(text))
-                refData.setLow52Dt(LocalDate.parse(text.replaceAll("[()]", EMPTY), DATE_FORMATTER));
+                refData.setLow52Dt(parseDate(text));
 
             text = getText(driver, By.xpath("//*[@id=\"upperbandVal\"]"));
             log.info("upper band: {}", text);
             if (isValidText.test(text))
-                refData.setUpperBand(Double.valueOf(text.replace(",", EMPTY)));
+                refData.setUpperBand(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"lowerbandVal\"]"));
             log.info("lower band: {}", text);
             if (isValidText.test(text))
-                refData.setLowerBand(Double.valueOf(text.replace(",", EMPTY)));
+                refData.setLowerBand(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"pricebandVal\"]"));
             log.info("price band: {}", text);
             if (isValidText.test(text))
                 refData.setPriceBand(text);
-
-            waitUntil(wait, By.xpath("//*[@id=\"Securities_Info_New\"]"));
 
             text = getText(driver, By.xpath("//*[@id=\"status\"]/../td[2]"));
             log.info("status listed: {}", text);
@@ -271,17 +293,17 @@ public class NSEService {
             text = getText(driver, By.xpath("//*[@id=\"Date_of_Listing\"]/../td[2]"));
             log.info("listing date: {}", text);
             if (isValidText.test(text))
-                refData.setListedDt(LocalDate.parse(text, DATE_FORMATTER));
+                refData.setListedDt(parseDate(text));
 
             text = getText(driver, By.xpath("//*[@id=\"SectoralIndxPE\"]/../td[2]"));
             log.info("adjusted P/E: {}", text);
             if (isValidText.test(text))
-                refData.setAdjustedPE(Double.valueOf(text.replace(",", EMPTY)));
+                refData.setAdjustedPE(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"Symbol_PE\"]/../td[2]"));
             log.info("symbol P/E: {}", text);
             if (isValidText.test(text))
-                refData.setSymbolPE(Double.valueOf(text.replace(",", EMPTY)));
+                refData.setSymbolPE(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"Sectoral_Index\"]/../td[2]"));
             log.info("sectoral index: {}", text);
@@ -292,8 +314,6 @@ public class NSEService {
             log.info("basic industry: {}", text);
             if (isValidText.test(text))
                 refData.setBasicIndustry(text);
-
-            waitUntil(wait, By.xpath("//*[@id=\"BoardStatus\"]"));
 
             text = getText(driver, By.xpath("//*[@id=\"BoardStatus\"]/../td[2]"));
             log.info("board status: {}", text);
@@ -310,21 +330,15 @@ public class NSEService {
             if (isValidText.test(text))
                 refData.setSharesClass(text);
 
-            waitUntil(wait, By.xpath("//*[@id=\"topCorpActionTable\"]"));
-
             text = getText(driver, By.xpath("//*[@id=\"topCorpActionTable\"]"));
             log.info("corp actions: \n{}", text);
             if (isValidText.test(text))
                 refData.setCorpActions(text.split("\n"));
 
-            waitUntil(wait, By.xpath("//*[@id=\"topFinancialResultsTable\"]"));
-
             text = getText(driver, By.xpath("//*[@id=\"topFinancialResultsTable\"]"));
             log.info("financial results \n{}", text);
             if (isValidText.test(text))
                 refData.setFinancialResults(text.split("\n"));
-
-            waitUntil(wait, By.xpath("//*[@id=\"tabletopSHP\"]"));
 
             text = getText(driver, By.xpath("//*[@id=\"tabletopSHP\"]"));
             log.info("shareholding patterns: \n{}", text);
@@ -340,31 +354,6 @@ public class NSEService {
         }
 
         return refData;
-    }
-
-    private void waitUntil(FluentWait<WebDriver> wait, By by) {
-        try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(by));
-        } catch (Exception e) {
-            log.warn("Error waiting for element: {}", by);
-        }
-
-    }
-
-    private String getText(WebDriver driver, By by) {
-        try {
-            return driver.findElement(by).getText();
-        } catch (Exception e) {
-            log.warn("Couldn't find element for : {}", by.toString());
-            return null;
-        }
-    }
-
-    public StatusMessage reloadStocksData() {
-
-        //todo : all -> go to db and get al instruments otherwise verify presence of instrument
-
-        return new StatusMessage(Status.SUCCESS, "Ref data reloaded successfully");
     }
 
     private List<Map<String, String>> loadRefData(String expectedFileName) throws CsvValidationException, IOException {

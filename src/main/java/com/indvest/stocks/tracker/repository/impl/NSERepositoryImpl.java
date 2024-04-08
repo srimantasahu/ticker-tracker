@@ -6,6 +6,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Repository;
@@ -22,6 +23,9 @@ import java.util.stream.Collectors;
 @Repository
 public class NSERepositoryImpl implements NSERepository {
     private static final Logger log = LoggerFactory.getLogger(NSERepositoryImpl.class);
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private NamedParameterJdbcTemplate namedJdbcTemplate;
@@ -203,6 +207,12 @@ public class NSERepositoryImpl implements NSERepository {
         int updateResult = namedJdbcTemplate.update(updateQuery.toString(), refDataMap);
 
         log.info("Update result: {}", updateResult);
+    }
+
+    @Override
+    public List<String> getAll() {
+        final String symbolsQuery = "SELECT symbol FROM stocks.refdata WHERE symbol NOT LIKE 'NIFTY%'";
+        return jdbcTemplate.queryForList(symbolsQuery, String.class);
     }
 
 }
