@@ -150,9 +150,6 @@ public class NSEService {
                 log.info("Refreshing Ref data for: {} instruments", instruments.size());
                 for (int i = 0; i < instruments.size(); i++) {
                     loadStocksData(instruments.get(i));
-                    if (i % 11 == 10) {
-                        break;
-                    }
                     log.info("Loaded instruments count: {}", i + 1);
                 }
             }
