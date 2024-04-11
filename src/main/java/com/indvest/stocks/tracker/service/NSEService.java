@@ -43,11 +43,17 @@ public class NSEService {
     @Value("${nse.download.path}")
     private String downloadPath;
 
+    @Value("${nse.download.sleep.time}")
+    private int dwldSleepTime;
+
     @Value("${nse.download.wait.timeout}")
     private int dwldWaitTimeout;
 
     @Value("${nse.download.poll.interval}")
     private int dwldPollInterval;
+
+    @Value("${nse.extract.sleep.time}")
+    private int extSleepTime;
 
     @Value("${nse.extract.wait.timeout}")
     private int extWaitTimeout;
@@ -74,7 +80,7 @@ public class NSEService {
             wait.pollingEvery(Duration.ofMillis(dwldPollInterval));
             wait.ignoring(NoSuchElementException.class);
 
-            Thread.sleep(dwldWaitTimeout);
+            Thread.sleep(dwldSleepTime);
 
             wait.until(d -> ((JavascriptExecutor) driver).executeScript("return document.readyState").equals("complete"));
 
@@ -93,7 +99,7 @@ public class NSEService {
 
             dwldcsv.click();
 
-            Thread.sleep(dwldWaitTimeout);
+            Thread.sleep(dwldSleepTime);
 
             log.info("Clicked on download csv");
 
@@ -213,9 +219,10 @@ public class NSEService {
             // connecting to the target web page
             driver.get("https://www.nseindia.com/get-quotes/equity?symbol=" + UrlEscapers.urlFragmentEscaper().escape(symbol));
 
-            waitUntil(wait, By.xpath("//*[@id=\"tabletopSHP\"]/table/tbody"));
+            Thread.sleep(extSleepTime);
 
-            final Predicate<String> isValidText = s -> isNotBlank(s) && !s.trim().equals("-");
+            waitUntil(wait, By.xpath("//*[@id=\"Symbol_PE\"]/../td[2]"));
+            waitUntil(wait, By.xpath("//*[@id=\"topFinancialResultsTable\"]/tbody/tr[1]/td[2]"));
 
             log.info("--------------------------------------------------------------------------------------------------------");
 

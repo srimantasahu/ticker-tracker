@@ -11,12 +11,17 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
+
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public final class SeleniumUtil {
     private static final Logger log = LoggerFactory.getLogger(SeleniumUtil.class);
 
     private SeleniumUtil() {
     }
+
+    public static final Predicate<String> isValidText = s -> isNotBlank(s) && !s.trim().equals("-");
 
     public static WebDriver getWebDriver(String downloadPath, boolean headless) {
         Map<String, Object> chromePref = new HashMap<>();
