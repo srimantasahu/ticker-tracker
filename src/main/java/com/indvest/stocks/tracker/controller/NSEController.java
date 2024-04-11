@@ -44,9 +44,9 @@ public class NSEController {
     }
 
     @GetMapping("refresh")
-    public Response refresh() {
-        log.info("Request received for refreshing instruments");
-        StatusMessage statusMessage = nseService.refreshStocksData();
+    public Response refresh(@RequestParam String status) {
+        log.info("Request received for refreshing instruments with status: {}", status);
+        StatusMessage statusMessage = nseService.refreshStocksData(status);
         log.info("Refreshing of instruments resulted: {}, with message: {}", statusMessage.status(), statusMessage.message());
         return new Response("ALL", statusMessage.status(), statusMessage.message());
     }

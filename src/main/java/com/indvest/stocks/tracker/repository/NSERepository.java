@@ -12,5 +12,5 @@ public interface NSERepository {
 
     void save(RefData refData);
 
-    List<String> getAll();
+    List<String> getInstruments(List<String> statuses);
 }

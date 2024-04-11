@@ -27,7 +27,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
+import static com.indvest.stocks.tracker.bean.DbStatus.*;
+import static com.indvest.stocks.tracker.bean.Status.INVALID;
+import static com.indvest.stocks.tracker.bean.Status.SUCCESS;
 import static com.indvest.stocks.tracker.util.CommonUtil.*;
 import static com.indvest.stocks.tracker.util.SeleniumUtil.*;
 import static org.apache.commons.lang3.StringUtils.*;
@@ -56,7 +60,7 @@ public class NSEService {
 
     public StatusMessage downloadStocksData(String entity) {
         if (isBlank(entity)) {
-            return new StatusMessage(Status.INVALID_INPUT, "Require a value for entity");
+            return new StatusMessage(INVALID, "Require a value for entity");
         }
 
         WebDriver driver = getWebDriver(downloadPath, false);
@@ -69,6 +73,8 @@ public class NSEService {
             wait.withTimeout(Duration.ofMillis(dwldWaitTimeout));
             wait.pollingEvery(Duration.ofMillis(dwldPollInterval));
             wait.ignoring(NoSuchElementException.class);
+
+            Thread.sleep(dwldWaitTimeout);
 
             wait.until(d -> ((JavascriptExecutor) driver).executeScript("return document.readyState").equals("complete"));
 
@@ -85,10 +91,9 @@ public class NSEService {
 
             WebElement dwldcsv = driver.findElement(By.linkText("Download (.csv)"));
 
-            //FIXME: check why it's not ready for execution everytime
-            Thread.sleep(5000);
-
             dwldcsv.click();
+
+            Thread.sleep(dwldWaitTimeout);
 
             log.info("Clicked on download csv");
 
@@ -102,12 +107,12 @@ public class NSEService {
             driver.quit();
         }
 
-        return new StatusMessage(Status.SUCCESS, "File downloaded successfully");
+        return new StatusMessage(SUCCESS, "File downloaded successfully");
     }
 
     public StatusMessage storeStocksData(String entity) {
         if (isBlank(entity)) {
-            return new StatusMessage(Status.INVALID_INPUT, "Require a value for entity");
+            return new StatusMessage(INVALID, "Require a value for entity");
         }
 
         final String expectedFileName = downloadPath + getNSEFileName(entity);
@@ -121,13 +126,13 @@ public class NSEService {
             return new StatusMessage(Status.ERROR, e.getMessage());
         }
 
-        return new StatusMessage(Status.SUCCESS, "Ref data stored successfully");
+        return new StatusMessage(SUCCESS, "Ref data stored successfully");
     }
 
     public StatusMessage loadStocksData(String symbol) {
         log.info("Loading Ref data for: {}", symbol);
         if (isBlank(symbol)) {
-            return new StatusMessage(Status.INVALID_INPUT, "Require a value for symbol");
+            return new StatusMessage(INVALID, "Require a value for symbol");
         }
         try {
             final WebDriver driver = getWebDriver(downloadPath, false);
@@ -149,18 +154,30 @@ public class NSEService {
             return new StatusMessage(Status.ERROR, e.getMessage());
         }
 
-        return new StatusMessage(Status.SUCCESS, "Ref data loaded successfully");
+        return new StatusMessage(SUCCESS, "Ref data loaded successfully");
     }
 
-    public StatusMessage refreshStocksData() {
-        log.info("Refreshing all instrument ref data");
+    public StatusMessage refreshStocksData(String status) {
+        log.info("Refreshing instrument ref data");
+        if (Stream.of(Status.values()).noneMatch(sts -> sts.name().equals(status))) {
+            return new StatusMessage(INVALID, "Require a valid status");
+        }
         try {
-            final List<String> instruments = nseRepository.getAll();
+            final List<String> statuses = new ArrayList<>();
+
+            switch (Status.valueOf(status)) {
+                case FAILED -> Stream.of(SKIPPED, PARTIAL).map(Enum::toString).forEach(statuses::add);
+                case ALL -> Stream.of(SKIPPED, PARTIAL, COMPLETED, UNKNOWN).map(Enum::toString).forEach(statuses::add);
+            }
+
+            log.info("Refreshing instrument data for statuses: {}", statuses);
+
+            final List<String> instruments = nseRepository.getInstruments(statuses);
 
             if (CollectionUtils.isNotEmpty(instruments)) {
                 log.info("Refreshing Ref data for: {} instruments", instruments.size());
-                WebDriver driver = getWebDriver(false);
-                FluentWait<WebDriver> wait = new FluentWait<>(driver);
+                final WebDriver driver = getWebDriver(false);
+                final FluentWait<WebDriver> wait = new FluentWait<>(driver);
                 wait.withTimeout(Duration.ofMillis(extWaitTimeout));
                 wait.pollingEvery(Duration.ofMillis(extPollInterval));
                 wait.ignoring(NoSuchElementException.class);
@@ -186,7 +203,7 @@ public class NSEService {
             return new StatusMessage(Status.ERROR, e.getMessage());
         }
 
-        return new StatusMessage(Status.SUCCESS, "Ref data refreshed successfully");
+        return new StatusMessage(SUCCESS, "Ref data refreshed successfully");
     }
 
     private RefData extractRefData(String symbol, WebDriver driver, FluentWait<WebDriver> wait) throws Exception {
@@ -196,14 +213,7 @@ public class NSEService {
             // connecting to the target web page
             driver.get("https://www.nseindia.com/get-quotes/equity?symbol=" + UrlEscapers.urlFragmentEscaper().escape(symbol));
 
-            //FIXME: check why it's not ready for execution everytime
-            Thread.sleep(3000);
-
-            wait.until(d -> ((JavascriptExecutor) driver).executeScript("return document.readyState").equals("complete"));
-
-            waitUntil(wait, By.xpath("//*[@id=\"quoteName\"]"));
-            waitUntil(wait, By.xpath("//*[@id=\"week52lowVal\"]"));
-            waitUntil(wait, By.xpath("//*[@id=\"Symbol_PE\"]/../td[2]"));
+            waitUntil(wait, By.xpath("//*[@id=\"tabletopSHP\"]/table/tbody"));
 
             final Predicate<String> isValidText = s -> isNotBlank(s) && !s.trim().equals("-");
 

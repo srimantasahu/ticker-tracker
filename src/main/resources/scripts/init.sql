@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS stocks.refdata
     trading_status character varying(20),
 	sect_index character varying(50),
     shares_class character varying(20),
-    basic_industry character varying(50),
+    basic_industry character varying(120),
     board_status character varying(50),
     trading_segment character varying(50),
     corp_actions text[],
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS stocks.refdata
 	created_at timestamp default NOW(),
     file_updated_at timestamp default NOW(),
     inst_updated_at timestamp,
-    status character varying(20),
+    status character varying(20) DEFAULT 'UNKNOWN',
     id bigserial NOT NULL,
     CONSTRAINT refdata_pk PRIMARY KEY (symbol)
 )
@@ -90,7 +90,8 @@ TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS stocks.refdata
 
--- ALTER TABLE stocks.refdata ADD COLUMN status character varying(20)
+-- ALTER TABLE stocks.refdata ADD COLUMN status character varying(20) DEFAULT 'UNKNOWN'
+-- ALTER TABLE stocks.refdata ADD COLUMN status character varying(20) DEFAULT 'UNKNOWN'
 
 
 ------------------------------------------------------------------------------------------------------------------------
