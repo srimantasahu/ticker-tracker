@@ -31,6 +31,15 @@ public final class SeleniumUtil {
         return new ChromeDriver(options);
     }
 
+    public static WebDriver getWebDriver(boolean headless) {
+        ChromeOptions options = new ChromeOptions();
+        if (headless) {
+            options.addArguments("--headless");
+        }
+
+        return new ChromeDriver(options);
+    }
+
     public static void waitUntil(FluentWait<WebDriver> wait, By by) {
         try {
             wait.until(ExpectedConditions.presenceOfElementLocated(by));

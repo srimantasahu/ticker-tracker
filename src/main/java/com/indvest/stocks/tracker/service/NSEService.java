@@ -130,9 +130,20 @@ public class NSEService {
             return new StatusMessage(Status.INVALID_INPUT, "Require a value for symbol");
         }
         try {
-            final RefData refData = extractRefData(symbol);
+            final WebDriver driver = getWebDriver(downloadPath, false);
+            final FluentWait<WebDriver> wait = new FluentWait<>(driver);
+            wait.withTimeout(Duration.ofMillis(extWaitTimeout));
+            wait.pollingEvery(Duration.ofMillis(extPollInterval));
+            wait.ignoring(NoSuchElementException.class);
 
-            nseRepository.save(refData);
+            try {
+                final RefData refData = extractRefData(symbol, driver, wait);
+                nseRepository.save(refData);
+            } catch (Exception e) {
+                log.error("Some error occurred for symbol: {}", symbol, e);
+            } finally {
+                driver.quit();
+            }
         } catch (Exception e) {
             log.error("Error message: {}", e.getMessage());
             return new StatusMessage(Status.ERROR, e.getMessage());
@@ -148,9 +159,26 @@ public class NSEService {
 
             if (CollectionUtils.isNotEmpty(instruments)) {
                 log.info("Refreshing Ref data for: {} instruments", instruments.size());
-                for (int i = 0; i < instruments.size(); i++) {
-                    loadStocksData(instruments.get(i));
-                    log.info("Loaded instruments count: {}", i + 1);
+                WebDriver driver = getWebDriver(false);
+                FluentWait<WebDriver> wait = new FluentWait<>(driver);
+                wait.withTimeout(Duration.ofMillis(extWaitTimeout));
+                wait.pollingEvery(Duration.ofMillis(extPollInterval));
+                wait.ignoring(NoSuchElementException.class);
+
+                try {
+                    for (int i = 0; i < instruments.size(); i++) {
+                        try {
+                            final RefData refData = extractRefData(instruments.get(i), driver, wait);
+                            nseRepository.save(refData);
+                            log.info("Saved instruments count: {}", i + 1);
+                        } catch (Exception e) {
+                            log.error("Some error occurred for symbol: {}", instruments.get(i), e);
+                        } finally {
+                            driver.manage().deleteAllCookies();
+                        }
+                    }
+                } finally {
+                    driver.quit();
                 }
             }
         } catch (Exception e) {
@@ -161,19 +189,12 @@ public class NSEService {
         return new StatusMessage(Status.SUCCESS, "Ref data refreshed successfully");
     }
 
-    private RefData extractRefData(String symbol) throws Exception {
+    private RefData extractRefData(String symbol, WebDriver driver, FluentWait<WebDriver> wait) throws Exception {
         final RefData refData = new RefData(symbol);
-
-        WebDriver driver = getWebDriver(downloadPath, false);
 
         try {
             // connecting to the target web page
             driver.get("https://www.nseindia.com/get-quotes/equity?symbol=" + UrlEscapers.urlFragmentEscaper().escape(symbol));
-
-            FluentWait<WebDriver> wait = new FluentWait<>(driver);
-            wait.withTimeout(Duration.ofMillis(extWaitTimeout));
-            wait.pollingEvery(Duration.ofMillis(extPollInterval));
-            wait.ignoring(NoSuchElementException.class);
 
             //FIXME: check why it's not ready for execution everytime
             Thread.sleep(3000);
@@ -186,6 +207,8 @@ public class NSEService {
 
             final Predicate<String> isValidText = s -> isNotBlank(s) && !s.trim().equals("-");
 
+            log.info("--------------------------------------------------------------------------------------------------------");
+
             String text = getText(driver, By.xpath("//*[@id=\"quoteName\"]"));
 
             log.info("Instrument Name & ISIN: {}", text);
@@ -193,52 +216,52 @@ public class NSEService {
                 refData.setIsin(StringUtils.substringBetween(text, "(", ")"));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBuyTq\"]"));
-            log.info("order book buy qty: {}", text);
+            log.info("buy qty: {}", text);
             if (isValidText.test(text))
                 refData.setBuyQty(parseLong(text));
 
             text = getText(driver, By.xpath("//*[@id=\"orderSellTq\"]"));
-            log.info("order book sell qty: {}", text);
+            log.info("sell qty: {}", text);
             if (isValidText.test(text))
                 refData.setSellQty(parseLong(text));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookTradeVol\"]"));
-            log.info("order book trade vol in lk: {}", text);
+            log.info("trade vol in lk: {}", text);
             if (isValidText.test(text))
                 refData.setTradeVolInLk(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookTradeVal\"]"));
-            log.info("order book trade value in cr: {}", text);
+            log.info("trade value in cr: {}", text);
             if (isValidText.test(text))
                 refData.setTradeValInCr(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookTradeTMC\"]"));
-            log.info("order book total market cap in cr: {}", text);
+            log.info("total market cap in cr: {}", text);
             if (isValidText.test(text))
                 refData.setTotMarCapInCr(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookTradeFFMC\"]"));
-            log.info("order book free float market cap in cr: {}", text);
+            log.info("free float market cap in cr: {}", text);
             if (isValidText.test(text))
                 refData.setFfMarCapInCr(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookTradeIC\"]"));
-            log.info("order book impact cost: {}", text);
+            log.info("impact cost: {}", text);
             if (isValidText.test(text))
                 refData.setImpactCost(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookDeliveryTradedQty\"]"));
-            log.info("order book percent traded qty: {}", text);
+            log.info("percent traded qty: {}", text);
             if (isValidText.test(text))
                 refData.setPerTradedQty(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"orderBookAppMarRate\"]"));
-            log.info("order book applicable margin rate: {}", text);
+            log.info("applicable margin rate: {}", text);
             if (isValidText.test(text))
                 refData.setAppMarRate(parseDouble(text));
 
             text = getText(driver, By.xpath("//*[@id=\"mainFaceValue\"]"));
-            log.info("order book face value: {}", text);
+            log.info("face value: {}", text);
             if (isValidText.test(text))
                 refData.setFaceValue(parseInt(text));
 
@@ -346,8 +369,6 @@ public class NSEService {
         } catch (Exception e) {
             log.error("Error while extracting instrument info: {}", e.getMessage(), e);
             throw e;
-        } finally {
-            driver.quit();
         }
 
         return refData;

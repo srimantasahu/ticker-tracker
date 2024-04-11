@@ -81,6 +81,7 @@ CREATE TABLE IF NOT EXISTS stocks.refdata
 	created_at timestamp default NOW(),
     file_updated_at timestamp default NOW(),
     inst_updated_at timestamp,
+    status character varying(20),
     id bigserial NOT NULL,
     CONSTRAINT refdata_pk PRIMARY KEY (symbol)
 )
@@ -88,6 +89,8 @@ CREATE TABLE IF NOT EXISTS stocks.refdata
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS stocks.refdata
+
+-- ALTER TABLE stocks.refdata ADD COLUMN status character varying(20)
 
 
 ------------------------------------------------------------------------------------------------------------------------

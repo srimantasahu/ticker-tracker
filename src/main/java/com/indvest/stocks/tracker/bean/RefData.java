@@ -61,10 +61,6 @@ public class RefData {
         return symbol;
     }
 
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
     public Long getBuyQty() {
         return buyQty;
     }

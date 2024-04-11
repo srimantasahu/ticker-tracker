@@ -14,11 +14,11 @@ import org.springframework.stereotype.Repository;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static com.indvest.stocks.tracker.bean.Status.*;
 
 @Repository
 public class NSERepositoryImpl implements NSERepository {
@@ -196,8 +196,12 @@ public class NSERepositoryImpl implements NSERepository {
         }
 
         if (refDataMap.isEmpty()) {
-            log.error("Update skipped as nothing scraped for symbol: {}", refData.getSymbol());
-            throw new RuntimeException("Ref data not found");
+            log.error("Nothing scraped for symbol: {}", refData.getSymbol());
+            refDataMap.put("status", NO_UPDATE.name());
+        } else if (Stream.of(refData.getCorpActions(), refData.getAdjustedPE(), refData.getSymbolPE(), refData.getIsin(), refData.getHigh52(), refData.getLow52()).anyMatch(Objects::isNull)) {
+            refDataMap.put("status", PARTIAL_UPDATE.name());
+        } else {
+            refDataMap.put("status", SUCCESS.name());
         }
 
         if (refData.getIsin() != null) {
@@ -205,18 +209,19 @@ public class NSERepositoryImpl implements NSERepository {
             refDataMap.put("isin", refData.getIsin());
         }
 
-        updateQuery.append("inst_updated_at = :inst_updated_at WHERE symbol = :symbol");
+        updateQuery.append("inst_updated_at = :inst_updated_at, status = :status WHERE symbol = :symbol");
         refDataMap.put("inst_updated_at", Timestamp.valueOf(LocalDateTime.now()));
         refDataMap.put("symbol", refData.getSymbol());
 
         int updateResult = namedJdbcTemplate.update(updateQuery.toString(), refDataMap);
 
-        log.info("Update result: {}", updateResult);
+        log.info("Symbol: {}, Status: {}, Update result: {}", refData.getSymbol(), refDataMap.get("status"), updateResult);
     }
 
     @Override
     public List<String> getAll() {
-        final String symbolsQuery = "SELECT symbol FROM stocks.refdata WHERE symbol NOT LIKE 'NIFTY%'";
+//        final String symbolsQuery = "SELECT symbol FROM stocks.refdata WHERE symbol NOT LIKE 'NIFTY%'";
+        final String symbolsQuery = "SELECT symbol FROM stocks.refdata LIMIT 5";
         return jdbcTemplate.queryForList(symbolsQuery, String.class);
     }
 
