@@ -1,12 +1,36 @@
 ------------------------------------------------------------------------------------------------------------------------
-
-Query: stocks near to low_52w
-
-select symbol, low_52w, ltp, high_52w, per_chng_30d, per_chng_365d
-from stocks.refdata
-where ltp < (low_52w + high_52w)/2
-order by ltp - low_52w
-
 ------------------------------------------------------------------------------------------------------------------------
 
+-- Query: distinct values
 
+-- select distinct sect_index from stocks.refdata where sect_index is not null and sect_index not like 'NA'
+
+-- select distinct basic_industry from stocks.refdata where basic_industry is not null order by basic_industry asc
+
+
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+-- Query: stocks near to low_52w
+
+-- select * from stocks.refdata where ltp < (low_52w + high_52w)/2 order by ltp - low_52w
+
+
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+-- Query: sectoral stocks near to low_52w
+
+-- select * from stocks.refdata where ltp < (low_52w + high_52w)/2 and sect_index = 'NIFTY PHARMA' order by ltp
+
+
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+-- Query: sectoral stocks near to low_52w with good pe value
+
+-- select * from stocks.refdata where ltp < (low_52w + high_52w)/2 and sect_index = 'NIFTY PHARMA' and symbol_pe < 20 order by ltp - low_52w
+
+
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
