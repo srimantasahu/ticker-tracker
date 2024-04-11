@@ -360,20 +360,47 @@ public class NSEService {
             if (isValidText.test(text))
                 refData.setSharesClass(text);
 
+            text = getText(driver, By.xpath("//*[@id=\"topFinancialResultsTable\"]"));
+            log.info("financial results \n{}", text);
+            if (isValidText.test(text)) {
+                refData.setFinancialResults(text.split("\n"));
+
+                text = getText(driver, By.xpath("//*[@id=\"topFinancialResultsTable\"]/tbody/tr[1]/td[2]"));
+                log.info("last quarter total income in cr: {}", text);
+                if (isValidText.test(text))
+                    refData.setTotIncomeInCr(parseDouble(text));
+
+                text = getText(driver, By.xpath("//*[@id=\"topFinancialResultsTable\"]/tbody/tr[1]/td[3]"));
+                log.info("last quarter net PnL in cr: {}", text);
+                if (isValidText.test(text))
+                    refData.setNetPnLInCr(parseDouble(text));
+
+                text = getText(driver, By.xpath("//*[@id=\"topFinancialResultsTable\"]/tbody/tr[1]/td[4]"));
+                log.info("last quarter earnings per share: {}", text);
+                if (isValidText.test(text))
+                    refData.setEarningsPerShare(parseDouble(text));
+            }
+
+            text = getText(driver, By.xpath("//*[@id=\"tabletopSHP\"]"));
+            log.info("shareholding patterns: \n{}", text);
+            if (isValidText.test(text)) {
+                refData.setShareholdingPatterns(text.split("\n"));
+
+                text = getText(driver, By.xpath("//*[@id=\"tabletopSHP\"]/table/tbody/tr[1]/td[2]"));
+                log.info("last quarter promoter shareholding %: {}", text);
+                if (isValidText.test(text))
+                    refData.setPromoterSHP(parseDouble(text));
+
+                text = getText(driver, By.xpath("//*[@id=\"tabletopSHP\"]/table/tbody/tr[2]/td[2]"));
+                log.info("last quarter public shareholding %: {}", text);
+                if (isValidText.test(text))
+                    refData.setPublicSHP(parseDouble(text));
+            }
+
             text = getText(driver, By.xpath("//*[@id=\"topCorpActionTable\"]"));
             log.info("corp actions: \n{}", text);
             if (isValidText.test(text))
                 refData.setCorpActions(text.split("\n"));
-
-            text = getText(driver, By.xpath("//*[@id=\"topFinancialResultsTable\"]"));
-            log.info("financial results \n{}", text);
-            if (isValidText.test(text))
-                refData.setFinancialResults(text.split("\n"));
-
-            text = getText(driver, By.xpath("//*[@id=\"tabletopSHP\"]"));
-            log.info("shareholding patterns: \n{}", text);
-            if (isValidText.test(text))
-                refData.setShareholdingPatterns(text.split("\n"));
 
             log.info("Extracted instrument info successfully");
         } catch (Exception e) {

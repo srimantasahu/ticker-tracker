@@ -41,6 +41,13 @@ public class RefData {
     private String tradingSegment;
     private String sharesClass;
 
+    private Double totIncomeInCr;
+    private Double netPnLInCr;
+    private Double earningsPerShare;
+
+    private Double promoterSHP;
+    private Double publicSHP;
+
     private String[] corpActions;
     private String[] financialResults;
     private String[] shareholdingPatterns;
@@ -275,6 +282,46 @@ public class RefData {
 
     public void setSharesClass(String sharesClass) {
         this.sharesClass = sharesClass;
+    }
+
+    public Double getTotIncomeInCr() {
+        return totIncomeInCr;
+    }
+
+    public void setTotIncomeInCr(Double totIncomeInCr) {
+        this.totIncomeInCr = totIncomeInCr;
+    }
+
+    public Double getNetPnLInCr() {
+        return netPnLInCr;
+    }
+
+    public void setNetPnLInCr(Double netPnLInCr) {
+        this.netPnLInCr = netPnLInCr;
+    }
+
+    public Double getEarningsPerShare() {
+        return earningsPerShare;
+    }
+
+    public void setEarningsPerShare(Double earningsPerShare) {
+        this.earningsPerShare = earningsPerShare;
+    }
+
+    public Double getPromoterSHP() {
+        return promoterSHP;
+    }
+
+    public void setPromoterSHP(Double promoterSHP) {
+        this.promoterSHP = promoterSHP;
+    }
+
+    public Double getPublicSHP() {
+        return publicSHP;
+    }
+
+    public void setPublicSHP(Double publicSHP) {
+        this.publicSHP = publicSHP;
     }
 
     public String[] getCorpActions() {

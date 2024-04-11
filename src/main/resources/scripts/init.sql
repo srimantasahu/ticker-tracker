@@ -75,6 +75,11 @@ CREATE TABLE IF NOT EXISTS stocks.refdata
     basic_industry character varying(120),
     board_status character varying(50),
     trading_segment character varying(50),
+    tot_income_cr double precision,
+    net_pnl_cr double precision,
+    earnings_share double precision,
+    promoter_holding double precision,
+    public_holding double precision,
     corp_actions text[],
     fin_results text[],
     holding_patterns text[],
@@ -91,7 +96,13 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS stocks.refdata
 
 -- ALTER TABLE stocks.refdata ADD COLUMN status character varying(20) DEFAULT 'UNKNOWN'
--- ALTER TABLE stocks.refdata ADD COLUMN status character varying(20) DEFAULT 'UNKNOWN'
+-- ALTER TABLE stocks.refdata ALTER COLUMN basic_industry TYPE character varying(120)
+
+-- ALTER TABLE stocks.refdata ADD COLUMN tot_income_cr double precision
+-- ALTER TABLE stocks.refdata ADD COLUMN net_pnl_cr double precision;
+-- ALTER TABLE stocks.refdata ADD COLUMN earnings_share double precision;
+-- ALTER TABLE stocks.refdata ADD COLUMN promoter_holding double precision;
+-- ALTER TABLE stocks.refdata ADD COLUMN public_holding double precision;
 
 
 ------------------------------------------------------------------------------------------------------------------------

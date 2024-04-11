@@ -178,23 +178,45 @@ public class NSERepositoryImpl implements NSERepository {
             updateQuery.append("shares_class = :shares_class, ");
             refDataMap.put("shares_class", refData.getSharesClass());
         }
-        if (refData.getCorpActions() != null) {
-            updateQuery.append("corp_actions = :corp_actions, ");
-            refDataMap.put("corp_actions", refData.getCorpActions());
-        }
         if (refData.getFinancialResults() != null) {
             updateQuery.append("fin_results = :fin_results, ");
             refDataMap.put("fin_results", refData.getFinancialResults());
+
+            if (refData.getTotIncomeInCr() != null) {
+                updateQuery.append("tot_income_cr = :tot_income_cr, ");
+                refDataMap.put("tot_income_cr", refData.getTotIncomeInCr());
+            }
+            if (refData.getNetPnLInCr() != null) {
+                updateQuery.append("net_pnl_cr = :net_pnl_cr, ");
+                refDataMap.put("net_pnl_cr", refData.getNetPnLInCr());
+            }
+            if (refData.getEarningsPerShare() != null) {
+                updateQuery.append("earnings_share = :earnings_share, ");
+                refDataMap.put("earnings_share", refData.getEarningsPerShare());
+            }
         }
         if (refData.getShareholdingPatterns() != null) {
             updateQuery.append("holding_patterns = :holding_patterns, ");
             refDataMap.put("holding_patterns", refData.getShareholdingPatterns());
+
+            if (refData.getPromoterSHP() != null) {
+                updateQuery.append("promoter_holding = :promoter_holding, ");
+                refDataMap.put("promoter_holding", refData.getPromoterSHP());
+            }
+            if (refData.getPublicSHP() != null) {
+                updateQuery.append("public_holding = :public_holding, ");
+                refDataMap.put("public_holding", refData.getPublicSHP());
+            }
+        }
+        if (refData.getCorpActions() != null) {
+            updateQuery.append("corp_actions = :corp_actions, ");
+            refDataMap.put("corp_actions", refData.getCorpActions());
         }
 
         if (refDataMap.isEmpty()) {
             log.error("Nothing scraped for symbol: {}", refData.getSymbol());
             refDataMap.put("status", SKIPPED.name());
-        } else if (Stream.of(refData.getCorpActions(), refData.getAdjustedPE(), refData.getSymbolPE(), refData.getIsin(), refData.getHigh52(), refData.getLow52()).anyMatch(Objects::isNull)) {
+        } else if (Stream.of(refData.getEarningsPerShare(), refData.getPublicSHP(), refData.getSymbolPE()).anyMatch(Objects::isNull)) {
             refDataMap.put("status", PARTIAL.name());
         } else {
             refDataMap.put("status", COMPLETED.name());
