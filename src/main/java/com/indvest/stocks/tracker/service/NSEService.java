@@ -182,8 +182,8 @@ public class NSEService {
 
             if (CollectionUtils.isNotEmpty(instruments)) {
                 log.info("Refreshing Ref data for: {} instruments", instruments.size());
-                final WebDriver driver = getWebDriver(false);
-                final FluentWait<WebDriver> wait = new FluentWait<>(driver);
+                WebDriver driver = getWebDriver(false);
+                FluentWait<WebDriver> wait = new FluentWait<>(driver);
                 wait.withTimeout(Duration.ofMillis(extWaitTimeout));
                 wait.pollingEvery(Duration.ofMillis(extPollInterval));
                 wait.ignoring(NoSuchElementException.class);
@@ -199,6 +199,16 @@ public class NSEService {
                         } finally {
                             driver.manage().deleteAllCookies();
                         }
+
+                        if ((i+1) % 30 == 0) {
+                            driver.quit();
+                            driver = getWebDriver(false);
+                            wait = new FluentWait<>(driver);
+                            wait.withTimeout(Duration.ofMillis(extWaitTimeout));
+                            wait.pollingEvery(Duration.ofMillis(extPollInterval));
+                            wait.ignoring(NoSuchElementException.class);
+                        }
+
                     }
                 } finally {
                     driver.quit();
