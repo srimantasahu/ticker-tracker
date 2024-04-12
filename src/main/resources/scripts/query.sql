@@ -3,6 +3,8 @@
 
 -- Query: sanity checks
 
+-- select * from stocks.refdata
+
 -- select * from stocks.refdata where symbol = 'DABUR'
 
 -- select * from stocks.refdata where status = 'SKIPPED'
@@ -15,7 +17,7 @@
 
 -- Query: distinct values
 
--- select distinct sect_index from stocks.refdata where sect_index is not null and sect_index not like 'NA'
+-- select distinct sect_index from stocks.refdata where sect_index is not null
 
 -- select distinct basic_industry from stocks.refdata where basic_industry is not null order by basic_industry asc
 
@@ -49,7 +51,8 @@
 
 -- Query: sectoral stocks near to low_52w with low pe value and high earnings per share
 
--- select sect_index, symbol, ltp, symbol_pe, earnings_share, promoter_holding, low_52w, high_52w, per_chng_30d, per_chng_365d, price_band, face_val, buy_qty, sell_qty from stocks.refdata where ltp < (low_52w + high_52w)/2 and symbol_pe < 30 order by earnings_share desc, ltp - low_52w
+-- select sect_index, symbol, ltp, high_52w, low_52w, symbol_pe, earnings_share, promoter_holding, per_chng_30d, per_chng_365d, price_band, face_val, buy_qty, sell_qty from stocks.refdata 
+-- where ltp < (low_52w + high_52w)/2 and symbol_pe is null or symbol_pe < 10 order by sect_index asc, ltp asc, earnings_share desc
 
 
 ------------------------------------------------------------------------------------------------------------------------
