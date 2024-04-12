@@ -195,7 +195,7 @@ public class NSEService {
                         try {
                             final RefData refData = extractRefData(instruments.get(i), driver, wait);
                             nseRepository.save(refData);
-                            log.info("Saved instruments count: {}", i + 1);
+                            log.info("Saved instruments count: {} of {}", i + 1, instruments.size());
                         } catch (Exception e) {
                             log.error("Some error occurred for symbol: {}", instruments.get(i), e);
                         } finally {
