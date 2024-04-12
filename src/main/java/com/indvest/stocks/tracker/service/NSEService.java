@@ -172,8 +172,8 @@ public class NSEService {
             final List<String> statuses = new ArrayList<>();
 
             switch (Status.valueOf(status)) {
-                case FAILED -> Stream.of(SKIPPED, PARTIAL).map(Enum::toString).forEach(statuses::add);
-                case ALL -> Stream.of(SKIPPED, PARTIAL, COMPLETED, UNKNOWN).map(Enum::toString).forEach(statuses::add);
+                case FAILED -> Stream.of(SKIPPED, UNKNOWN).map(Enum::toString).forEach(statuses::add);
+                case ALL -> Stream.of(PARTIAL, COMPLETED, SKIPPED, UNKNOWN).map(Enum::toString).forEach(statuses::add);
             }
 
             log.info("Refreshing instrument data for statuses: {}", statuses);
