@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -227,7 +229,7 @@ public class NSEService {
 
         try {
             // connecting to the target web page
-            driver.get("https://www.nseindia.com/get-quotes/equity?symbol=" + UrlEscapers.urlFragmentEscaper().escape(symbol));
+            driver.get("https://www.nseindia.com/get-quotes/equity?symbol=" + URLEncoder.encode(symbol, StandardCharsets.UTF_8));
 
             Thread.sleep(extSleepTime);
 
