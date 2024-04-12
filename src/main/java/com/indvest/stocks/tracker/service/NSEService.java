@@ -238,10 +238,12 @@ public class NSEService {
 
             Thread.sleep(extSleepTime);
 
-            waitUntil(wait, By.xpath("//*[@id=\"Symbol_PE\"]/../td[2]"));
-            waitUntil(wait, By.xpath("//*[@id=\"topFinancialResultsTable\"]/tbody/tr[1]/td[2]"));
+            wait.until(d -> ((JavascriptExecutor) driver).executeScript("return document.readyState").equals("complete"));
+            wait.until(d -> ((JavascriptExecutor) driver).executeScript("return jQuery.active == 0"));
 
             log.info("--------------------------------------------------------------------------------------------------------");
+
+            waitUntil(wait, By.xpath("//*[@id=\"topFinancialResultsTable\"]/tbody/tr[1]/td[2]"));
 
             String text = getText(driver, By.xpath("//*[@id=\"quoteName\"]"));
 
