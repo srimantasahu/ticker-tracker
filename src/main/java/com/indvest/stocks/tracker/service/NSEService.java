@@ -1,6 +1,7 @@
 package com.indvest.stocks.tracker.service;
 
 import com.google.common.net.UrlEscapers;
+import com.indvest.stocks.tracker.bean.DbStatus;
 import com.indvest.stocks.tracker.bean.RefData;
 import com.indvest.stocks.tracker.bean.Status;
 import com.indvest.stocks.tracker.bean.StatusMessage;
@@ -28,7 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static com.indvest.stocks.tracker.bean.DbStatus.*;
@@ -36,7 +36,8 @@ import static com.indvest.stocks.tracker.bean.Status.INVALID;
 import static com.indvest.stocks.tracker.bean.Status.SUCCESS;
 import static com.indvest.stocks.tracker.util.CommonUtil.*;
 import static com.indvest.stocks.tracker.util.SeleniumUtil.*;
-import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Service
 public class NSEService {
@@ -62,6 +63,9 @@ public class NSEService {
 
     @Value("${nse.extract.poll.interval}")
     private int extPollInterval;
+
+    @Value("${nse.driver.reuse.count}")
+    private int driverReuseCount;
 
     @Autowired
     private NSERepository nseRepository;
@@ -174,8 +178,10 @@ public class NSEService {
             final List<String> statuses = new ArrayList<>();
 
             switch (Status.valueOf(status)) {
+                case BASIC_INFO -> Stream.of(BASIC_MISSING).map(Enum::toString).forEach(statuses::add);
+                case AUX_INFO -> Stream.of(AUX_MISSING).map(Enum::toString).forEach(statuses::add);
                 case FAILED -> Stream.of(SKIPPED, UNKNOWN).map(Enum::toString).forEach(statuses::add);
-                case ALL -> Stream.of(PARTIAL, COMPLETED, SKIPPED, UNKNOWN).map(Enum::toString).forEach(statuses::add);
+                case ALL -> Stream.of(DbStatus.values()).map(Enum::toString).forEach(statuses::add);
             }
 
             log.info("Refreshing instrument data for statuses: {}", statuses);
@@ -202,7 +208,7 @@ public class NSEService {
                             driver.manage().deleteAllCookies();
                         }
 
-                        if ((i+1) % 30 == 0) {
+                        if ((i + 1) % driverReuseCount == 0) {
                             driver.quit();
                             driver = getWebDriver(false);
                             wait = new FluentWait<>(driver);
@@ -210,7 +216,6 @@ public class NSEService {
                             wait.pollingEvery(Duration.ofMillis(extPollInterval));
                             wait.ignoring(NoSuchElementException.class);
                         }
-
                     }
                 } finally {
                     driver.quit();

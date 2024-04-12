@@ -216,10 +216,12 @@ public class NSERepositoryImpl implements NSERepository {
         if (refDataMap.isEmpty()) {
             log.error("Nothing scraped for symbol: {}", refData.getSymbol());
             refDataMap.put("status", SKIPPED.name());
-        } else if (Stream.of(refData.getEarningsPerShare(), refData.getPublicSHP(), refData.getSymbolPE()).anyMatch(Objects::isNull)) {
-            refDataMap.put("status", PARTIAL.name());
+        } else if (Stream.of(refData.getTotMarCapInCr(), refData.getSymbolPE()).anyMatch(Objects::isNull)) {
+            refDataMap.put("status", BASIC_MISSING.name());
+        } else if (Stream.of(refData.getEarningsPerShare(), refData.getPromoterSHP()).anyMatch(Objects::isNull)) {
+            refDataMap.put("status", AUX_MISSING.name());
         } else {
-            refDataMap.put("status", COMPLETED.name());
+            refDataMap.put("status", UPDATED.name());
         }
 
         if (refData.getIsin() != null) {

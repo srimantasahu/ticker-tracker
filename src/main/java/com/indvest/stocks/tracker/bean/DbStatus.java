@@ -3,8 +3,9 @@ package com.indvest.stocks.tracker.bean;
 public enum DbStatus {
 
     SKIPPED,
-    PARTIAL,
-    COMPLETED,
+    BASIC_MISSING,
+    AUX_MISSING,
+    UPDATED,
     UNKNOWN
 
 }
