@@ -49,10 +49,17 @@
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
 
--- Query: sectoral stocks near to low_52w with low pe value and high earnings per share
+-- Query: stocks near to low_52w with low pe value and high earnings per share
 
--- select sect_index, symbol, ltp, high_52w, low_52w, symbol_pe, earnings_share, promoter_holding, per_chng_30d, per_chng_365d, price_band, face_val, buy_qty, sell_qty from stocks.refdata 
--- where ltp < (low_52w + high_52w)/2 and symbol_pe is null or symbol_pe < 10 order by sect_index asc, ltp asc, earnings_share desc
+-- pe<20 and +eps, order by ltp
+
+-- select sect_index, symbol, ltp, high_52w, low_52w, adjusted_pe, symbol_pe, earnings_share, promoter_holding, public_holding, per_chng_365d, per_chng_30d, face_val, price_band, buy_qty, sell_qty from stocks.refdata 
+-- where symbol_pe < 20 and earnings_share > 0 and ltp < (low_52w + high_52w)/2 order by ltp asc, earnings_share desc, ltp asc, sect_index asc
+
+-- pe<10 and +eps, order by eps
+
+-- select sect_index, symbol, ltp, high_52w, low_52w, adjusted_pe, symbol_pe, earnings_share, promoter_holding, public_holding, per_chng_365d, per_chng_30d, face_val, price_band, buy_qty, sell_qty from stocks.refdata 
+-- where symbol_pe < 10 and earnings_share > 0 and ltp < (low_52w + high_52w)/2 order by earnings_share desc, ltp asc, sect_index asc
 
 
 ------------------------------------------------------------------------------------------------------------------------
