@@ -1,16 +1,16 @@
 package com.indvest.stocks.tracker.service;
 
 import com.google.common.net.UrlEscapers;
-import com.indvest.stocks.tracker.bean.DbStatus;
-import com.indvest.stocks.tracker.bean.RefData;
-import com.indvest.stocks.tracker.bean.Status;
-import com.indvest.stocks.tracker.bean.StatusMessage;
+import com.indvest.stocks.tracker.bean.*;
 import com.indvest.stocks.tracker.repository.NSERepository;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.slf4j.Logger;
@@ -24,7 +24,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,22 +74,18 @@ public class NSEService {
             return new StatusMessage(INVALID, "Require a value for entity");
         }
 
-        WebDriver driver = getWebDriver(downloadPath, false);
+        WebDriverAndWait driverAndWait = getWebDriverAndWait(downloadPath, false, dwldWaitTimeout, dwldPollInterval);
 
         try {
             // connecting to the target web page
-            driver.get("https://www.nseindia.com/market-data/live-equity-market?symbol=" + UrlEscapers.urlFragmentEscaper().escape(entity));
-
-            FluentWait<WebDriver> wait = new FluentWait<>(driver);
-            wait.withTimeout(Duration.ofMillis(dwldWaitTimeout));
-            wait.pollingEvery(Duration.ofMillis(dwldPollInterval));
-            wait.ignoring(NoSuchElementException.class);
+            driverAndWait.driver().get("https://www.nseindia.com/market-data/live-equity-market?symbol=" + UrlEscapers.urlFragmentEscaper().escape(entity));
 
             Thread.sleep(dwldSleepTime);
 
-            wait.until(d -> ((JavascriptExecutor) driver).executeScript("return document.readyState").equals("complete"));
+            driverAndWait.fluentWait().until(d -> ((JavascriptExecutor) driverAndWait.driver()).executeScript("return document.readyState").equals("complete"));
+            driverAndWait.fluentWait().until(d -> ((JavascriptExecutor) driverAndWait.driver()).executeScript("return jQuery.active == 0"));
 
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("dwldcsv")));
+            driverAndWait.fluentWait().until(ExpectedConditions.presenceOfElementLocated(By.id("dwldcsv")));
 
             final String expectedFileName = downloadPath + getNSEFileName(entity);
 
@@ -101,22 +96,25 @@ public class NSEService {
                 log.info("Deleted existing file: {}", file.delete());
             }
 
-            WebElement dwldcsv = driver.findElement(By.linkText("Download (.csv)"));
+            WebElement dwldcsv = driverAndWait.driver().findElement(By.linkText("Download (.csv)"));
 
             dwldcsv.click();
 
             Thread.sleep(dwldSleepTime);
 
+            driverAndWait.fluentWait().until(d -> ((JavascriptExecutor) driverAndWait.driver()).executeScript("return document.readyState").equals("complete"));
+            driverAndWait.fluentWait().until(d -> ((JavascriptExecutor) driverAndWait.driver()).executeScript("return jQuery.active == 0"));
+
             log.info("Clicked on download csv");
 
-            wait.until(d -> new File(expectedFileName).exists());
+            driverAndWait.fluentWait().until(d -> new File(expectedFileName).exists());
 
             log.info("Downloaded csv file exists in path");
         } catch (Exception e) {
             log.error("Error message: {}", e.getMessage(), e);
             return new StatusMessage(Status.ERROR, e.getMessage());
         } finally {
-            driver.quit();
+            destroyWebDriver(driverAndWait);
         }
 
         return new StatusMessage(SUCCESS, "File downloaded successfully");
@@ -141,29 +139,33 @@ public class NSEService {
         return new StatusMessage(SUCCESS, "Ref data stored successfully");
     }
 
-    public StatusMessage loadStocksData(String symbol) {
-        log.info("Loading Ref data for: {}", symbol);
-        if (isBlank(symbol)) {
-            return new StatusMessage(INVALID, "Require a value for symbol");
+    public StatusMessage loadStocksData(List<String> instruments) {
+        log.info("Loading Ref data for: {} instruments", CollectionUtils.size(instruments));
+        if (CollectionUtils.isEmpty(instruments)) {
+            return new StatusMessage(INVALID, "Require instruments to load");
         }
-        try {
-            final WebDriver driver = getWebDriver(downloadPath, false);
-            final FluentWait<WebDriver> wait = new FluentWait<>(driver);
-            wait.withTimeout(Duration.ofMillis(extWaitTimeout));
-            wait.pollingEvery(Duration.ofMillis(extPollInterval));
-            wait.ignoring(NoSuchElementException.class);
 
-            try {
-                final RefData refData = extractRefData(symbol, driver, wait);
-                nseRepository.save(refData);
-            } catch (Exception e) {
-                log.error("Some error occurred for symbol: {}", symbol, e);
-            } finally {
-                driver.quit();
+        WebDriverAndWait driverAndWait = getWebDriverAndWait(false, extWaitTimeout, extPollInterval);
+
+        try {
+            for (int i = 0; i < instruments.size(); i++) {
+                try {
+                    final RefData refData = extractRefData(instruments.get(i), driverAndWait.driver(), driverAndWait.fluentWait());
+                    nseRepository.save(refData);
+                    log.info("Saved instruments count: {} of {}", i + 1, instruments.size());
+                } catch (Exception e) {
+                    log.error("Some error occurred for symbol: {}", instruments.get(i), e);
+                } finally {
+                    passivateWebDriver(driverAndWait);
+                }
+
+                if ((i + 1) % driverReuseCount == 0) {
+                    destroyWebDriver(driverAndWait);
+                    driverAndWait = getWebDriverAndWait(false, extWaitTimeout, extPollInterval);
+                }
             }
-        } catch (Exception e) {
-            log.error("Error message: {}", e.getMessage());
-            return new StatusMessage(Status.ERROR, e.getMessage());
+        } finally {
+            destroyWebDriver(driverAndWait);
         }
 
         return new StatusMessage(SUCCESS, "Ref data loaded successfully");
@@ -174,6 +176,7 @@ public class NSEService {
         if (Stream.of(Status.values()).noneMatch(sts -> sts.name().equals(status))) {
             return new StatusMessage(INVALID, "Require a valid status");
         }
+
         try {
             final List<String> statuses = new ArrayList<>();
 
@@ -188,45 +191,11 @@ public class NSEService {
 
             final List<String> instruments = nseRepository.getInstruments(statuses);
 
-            if (CollectionUtils.isNotEmpty(instruments)) {
-                log.info("Refreshing Ref data for: {} instruments", instruments.size());
-                WebDriver driver = getWebDriver(false);
-                FluentWait<WebDriver> wait = new FluentWait<>(driver);
-                wait.withTimeout(Duration.ofMillis(extWaitTimeout));
-                wait.pollingEvery(Duration.ofMillis(extPollInterval));
-                wait.ignoring(NoSuchElementException.class);
-
-                try {
-                    for (int i = 0; i < instruments.size(); i++) {
-                        try {
-                            final RefData refData = extractRefData(instruments.get(i), driver, wait);
-                            nseRepository.save(refData);
-                            log.info("Saved instruments count: {} of {}", i + 1, instruments.size());
-                        } catch (Exception e) {
-                            log.error("Some error occurred for symbol: {}", instruments.get(i), e);
-                        } finally {
-                            driver.manage().deleteAllCookies();
-                        }
-
-                        if ((i + 1) % driverReuseCount == 0) {
-                            driver.quit();
-                            driver = getWebDriver(false);
-                            wait = new FluentWait<>(driver);
-                            wait.withTimeout(Duration.ofMillis(extWaitTimeout));
-                            wait.pollingEvery(Duration.ofMillis(extPollInterval));
-                            wait.ignoring(NoSuchElementException.class);
-                        }
-                    }
-                } finally {
-                    driver.quit();
-                }
-            }
+            return loadStocksData(instruments);
         } catch (Exception e) {
             log.error("Error message: {}", e.getMessage());
             return new StatusMessage(Status.ERROR, e.getMessage());
         }
-
-        return new StatusMessage(SUCCESS, "Ref data refreshed successfully");
     }
 
     private RefData extractRefData(String symbol, WebDriver driver, FluentWait<WebDriver> wait) throws Exception {

@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/nse/")
 public class NSEController {
@@ -36,11 +38,11 @@ public class NSEController {
     }
 
     @GetMapping("load")
-    public Response load(@RequestParam String symbol) {
-        log.info("Request received for loading symbol : {}", symbol);
-        StatusMessage statusMessage = nseService.loadStocksData(symbol.trim());
-        log.info("Loading of symbol: {}, resulted: {}, with message: {}", symbol, statusMessage.status(), statusMessage.message());
-        return new Response(symbol, statusMessage.status(), statusMessage.message());
+    public Response load(@RequestParam List<String> instruments) {
+        log.info("Request received for loading instruments : {}", instruments);
+        StatusMessage statusMessage = nseService.loadStocksData(instruments);
+        log.info("Loading of instruments: {}, resulted: {}, with message: {}", instruments, statusMessage.status(), statusMessage.message());
+        return new Response(instruments.toString(), statusMessage.status(), statusMessage.message());
     }
 
     @GetMapping("refresh")
