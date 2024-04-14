@@ -53,11 +53,12 @@
 
 -- Query: stocks near to low_52w with low pe value and high earnings per share
 
--- microcap: pe<5, ltp<50, order: ltp
+-- microcap: pe<5, ltp<20, order: ltp
 
 select sect_index, symbol, ltp, high_52w, low_52w, adjusted_pe, symbol_pe, earnings_share, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, face_val, price_band, buy_qty, sell_qty from stocks.refdata 
 where 1=1
-and ltp < 50
+and ltp < 20
+and ltp < (low_52w + high_52w)/2 
 and (symbol_pe is null or symbol_pe < 5)
 and (adjusted_pe is null or adjusted_pe < 5)
 and tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)
@@ -65,11 +66,11 @@ order by
 ltp asc;
 
 
--- smallcap: pe<15, ltp<150, order: ltp-low_52w
+-- smallcap: pe<15, ltp<100, order: ltp-low_52w
 
 select sect_index, symbol, ltp, high_52w, low_52w, adjusted_pe, symbol_pe, earnings_share, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, face_val, price_band, buy_qty, sell_qty from stocks.refdata 
 where 1=1
-and ltp < 150
+and ltp < 100
 and ltp < (low_52w + high_52w)/2 
 and (symbol_pe is null or symbol_pe < 15)
 and (adjusted_pe is null or adjusted_pe < 15)
@@ -79,14 +80,14 @@ order by
 ltp - low_52w asc;
 
 
--- midcap: pe<25, ltp<250 and +eps, order: eps
+-- midcap: pe<20, ltp<200 and +eps, order: eps
 
 select sect_index, symbol, ltp, high_52w, low_52w, adjusted_pe, symbol_pe, earnings_share, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, face_val, price_band, buy_qty, sell_qty from stocks.refdata 
 where 1=1
-and ltp < 250
+and ltp < 200
 and ltp < (low_52w + high_52w)/2 
-and (symbol_pe is null or symbol_pe < 25) 
-and (adjusted_pe is null or adjusted_pe < 25)
+and (symbol_pe is null or symbol_pe < 20) 
+and (adjusted_pe is null or adjusted_pe < 20)
 and (earnings_share is null or earnings_share > 0) 
 and tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 100)
 and tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 250)
@@ -99,8 +100,8 @@ select sect_index, symbol, ltp, high_52w, low_52w, adjusted_pe, symbol_pe, earni
 where 1=1
 and ltp < 500
 and ltp < (low_52w + high_52w)/2 
-and (symbol_pe is null or symbol_pe < 30) 
-and (adjusted_pe is null or adjusted_pe < 30)
+and (symbol_pe is null or symbol_pe < 50) 
+and (adjusted_pe is null or adjusted_pe < 50)
 and (earnings_share is null or earnings_share > 0) 
 and tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 100)
 order by 
