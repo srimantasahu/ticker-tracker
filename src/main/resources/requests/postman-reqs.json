@@ -1,0 +1,117 @@
+{
+	"info": {
+		"_postman_id": "d5916988-2c59-4c6d-9620-82fb872617c6",
+		"name": "TickerTracker",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "download-nse-data",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/ticker-tracker/nse/download?entity=NIFTY TOTAL MARKET",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"ticker-tracker",
+						"nse",
+						"download"
+					],
+					"query": [
+						{
+							"key": "entity",
+							"value": "NIFTY TOTAL MARKET"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "store-nse-data",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/ticker-tracker/nse/store?entity=NIFTY TOTAL MARKET",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"ticker-tracker",
+						"nse",
+						"store"
+					],
+					"query": [
+						{
+							"key": "entity",
+							"value": "NIFTY TOTAL MARKET"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "load-nse-instruments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/ticker-tracker/nse/load?instruments=DABUR,ITC",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"ticker-tracker",
+						"nse",
+						"load"
+					],
+					"query": [
+						{
+							"key": "instruments",
+							"value": "DABUR,ITC"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "refresh-nse-instruments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/ticker-tracker/nse/refresh?status=FAILED",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"ticker-tracker",
+						"nse",
+						"refresh"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "FAILED"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

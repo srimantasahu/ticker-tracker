@@ -4,6 +4,7 @@ public enum Status {
 
     ERROR,
     INVALID,
+    NO_UPDATE,
     SUCCESS,
     BASIC_INFO,
     AUX_INFO,

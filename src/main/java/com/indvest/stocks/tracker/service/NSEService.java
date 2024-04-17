@@ -31,8 +31,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.indvest.stocks.tracker.bean.DbStatus.*;
-import static com.indvest.stocks.tracker.bean.Status.INVALID;
-import static com.indvest.stocks.tracker.bean.Status.SUCCESS;
+import static com.indvest.stocks.tracker.bean.Status.*;
 import static com.indvest.stocks.tracker.util.CommonUtil.*;
 import static com.indvest.stocks.tracker.util.SeleniumUtil.*;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -142,7 +141,7 @@ public class NSEService {
     public StatusMessage loadStocksData(List<String> instruments) {
         log.info("Loading Ref data for: {} instruments", CollectionUtils.size(instruments));
         if (CollectionUtils.isEmpty(instruments)) {
-            return new StatusMessage(INVALID, "Require instruments to load");
+            return new StatusMessage(NO_UPDATE, "Instruments already updated");
         }
 
         WebDriverAndWait driverAndWait = getWebDriverAndWait(false, extWaitTimeout, extPollInterval);

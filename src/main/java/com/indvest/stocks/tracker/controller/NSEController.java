@@ -50,7 +50,7 @@ public class NSEController {
         log.info("Request received for refreshing instruments with status: {}", status);
         StatusMessage statusMessage = nseService.refreshStocksData(status);
         log.info("Refreshing of instruments resulted: {}, with message: {}", statusMessage.status(), statusMessage.message());
-        return new Response("ALL", statusMessage.status(), statusMessage.message());
+        return new Response(status, statusMessage.status(), statusMessage.message());
     }
 
 }

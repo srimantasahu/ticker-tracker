@@ -6,6 +6,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Repository;
@@ -22,6 +23,9 @@ import static com.indvest.stocks.tracker.bean.DbStatus.*;
 @Repository
 public class NSERepositoryImpl implements NSERepository {
     private static final Logger log = LoggerFactory.getLogger(NSERepositoryImpl.class);
+
+    @Value("${nse.refresh.interval.mins}")
+    private long refreshIntervalMins;
 
     @Autowired
     private NamedParameterJdbcTemplate namedJdbcTemplate;
@@ -240,8 +244,12 @@ public class NSERepositoryImpl implements NSERepository {
 
     @Override
     public List<String> getInstruments(List<String> statuses) {
-        final String symbolsQuery = "SELECT symbol FROM stocks.refdata WHERE status IN (:status) AND symbol NOT LIKE 'NIFTY%'";
-        return namedJdbcTemplate.queryForList(symbolsQuery, Collections.singletonMap("status", statuses), String.class);
+        final String symbolsQuery = "SELECT symbol FROM stocks.refdata WHERE status IN (:status) AND symbol NOT LIKE 'NIFTY%' AND inst_updated_at < (:updated_at)";
+        final Map<String, Object> params = new HashMap<>();
+        params.put("status", statuses);
+        params.put("updated_at", Timestamp.valueOf(LocalDateTime.now().minusMinutes(refreshIntervalMins)));
+
+        return namedJdbcTemplate.queryForList(symbolsQuery, params, String.class);
     }
 
 }
