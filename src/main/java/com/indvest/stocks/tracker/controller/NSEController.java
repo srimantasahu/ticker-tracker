@@ -53,4 +53,12 @@ public class NSEController {
         return new Response(status, statusMessage.status(), statusMessage.message());
     }
 
+    @GetMapping("reload")
+    public Response reload(@RequestParam String type) {
+        log.info("Request received for refreshing instruments with status: {}", type);
+        StatusMessage statusMessage = nseService.reloadStocksData(type);
+        log.info("Refreshing of instruments resulted: {}, with message: {}", statusMessage.status(), statusMessage.message());
+        return new Response(type, statusMessage.status(), statusMessage.message());
+    }
+
 }

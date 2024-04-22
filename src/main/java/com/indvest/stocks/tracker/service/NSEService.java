@@ -197,6 +197,24 @@ public class NSEService {
         }
     }
 
+    public StatusMessage reloadStocksData(String type) {
+        log.info("Reloading instrument ref data");
+        if (Stream.of(MarketType.values()).noneMatch(sts -> sts.name().equals(type))) {
+            return new StatusMessage(INVALID, "Require a valid market type");
+        }
+
+        try {
+            log.info("Reloading instrument data for type: {}", type);
+
+            final List<String> instruments = nseRepository.getInstruments(MarketType.valueOf(type));
+
+            return loadStocksData(instruments);
+        } catch (Exception e) {
+            log.error("Error message: {}", e.getMessage());
+            return new StatusMessage(Status.ERROR, e.getMessage());
+        }
+    }
+
     private RefData extractRefData(String symbol, WebDriver driver, FluentWait<WebDriver> wait) throws Exception {
         final RefData refData = new RefData(symbol);
 

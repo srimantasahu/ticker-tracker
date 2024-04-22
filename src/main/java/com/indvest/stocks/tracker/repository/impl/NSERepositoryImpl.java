@@ -1,6 +1,9 @@
 package com.indvest.stocks.tracker.repository.impl;
 
+import com.indvest.stocks.tracker.bean.DbStatus;
+import com.indvest.stocks.tracker.bean.MarketType;
 import com.indvest.stocks.tracker.bean.RefData;
+import com.indvest.stocks.tracker.bean.Status;
 import com.indvest.stocks.tracker.repository.NSERepository;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -26,6 +29,9 @@ public class NSERepositoryImpl implements NSERepository {
 
     @Value("${nse.refresh.interval.mins}")
     private long refreshIntervalMins;
+
+    @Value("${nse.reload.interval.mins}")
+    private long reloadIntervalMins;
 
     @Autowired
     private NamedParameterJdbcTemplate namedJdbcTemplate;
@@ -250,6 +256,33 @@ public class NSERepositoryImpl implements NSERepository {
         params.put("updated_at", Timestamp.valueOf(LocalDateTime.now().minusMinutes(refreshIntervalMins)));
 
         return namedJdbcTemplate.queryForList(symbolsQuery, params, String.class);
+    }
+
+    @Override
+    public List<String> getInstruments(MarketType marketType) {
+        final StringBuilder symbolsQuery = new StringBuilder("SELECT symbol FROM stocks.refdata WHERE symbol NOT LIKE 'NIFTY%' AND inst_updated_at < (:updated_at) ");
+        final Map<String, Object> params = new HashMap<>();
+
+        switch (marketType) {
+            case LARGE_CAP -> {
+                symbolsQuery.append("AND tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 100)");
+            }
+            case MID_CAP -> {
+                symbolsQuery.append("AND tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 100)");
+                symbolsQuery.append("AND tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 250)");
+            }
+            case SMALL_CAP -> {
+                symbolsQuery.append("AND tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 250)");
+                symbolsQuery.append("AND tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)");
+            }
+            case MICRO_CAP -> {
+                symbolsQuery.append("AND tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)");
+            }
+        }
+
+        params.put("updated_at", Timestamp.valueOf(LocalDateTime.now().minusMinutes(reloadIntervalMins)));
+
+        return namedJdbcTemplate.queryForList(symbolsQuery.toString(), params, String.class);
     }
 
 }
