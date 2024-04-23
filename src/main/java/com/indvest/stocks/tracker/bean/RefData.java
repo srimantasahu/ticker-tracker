@@ -2,11 +2,21 @@ package com.indvest.stocks.tracker.bean;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.StringJoiner;
 
 public class RefData {
 
     private String symbol;
+    private String name;
     private String isin;
+    private String series;
+
+    private Double ltp;
+    private Double prevClose;
+    private Double open;
+    private Double high;
+    private Double low;
+
     private Long buyQty;
     private Long sellQty;
 
@@ -56,6 +66,14 @@ public class RefData {
         this.symbol = symbol;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getIsin() {
         return isin;
     }
@@ -66,6 +84,54 @@ public class RefData {
 
     public String getSymbol() {
         return symbol;
+    }
+
+    public String getSeries() {
+        return series;
+    }
+
+    public void setSeries(String series) {
+        this.series = series;
+    }
+
+    public Double getLtp() {
+        return ltp;
+    }
+
+    public void setLtp(Double ltp) {
+        this.ltp = ltp;
+    }
+
+    public Double getPrevClose() {
+        return prevClose;
+    }
+
+    public void setPrevClose(Double prevClose) {
+        this.prevClose = prevClose;
+    }
+
+    public Double getOpen() {
+        return open;
+    }
+
+    public void setOpen(Double open) {
+        this.open = open;
+    }
+
+    public Double getHigh() {
+        return high;
+    }
+
+    public void setHigh(Double high) {
+        this.high = high;
+    }
+
+    public Double getLow() {
+        return low;
+    }
+
+    public void setLow(Double low) {
+        this.low = low;
     }
 
     public Long getBuyQty() {
@@ -350,38 +416,51 @@ public class RefData {
 
     @Override
     public String toString() {
-        return "RefData{" +
-                "symbol='" + symbol + '\'' +
-                ", buyQty=" + buyQty +
-                ", sellQty=" + sellQty +
-                ", tradeVolInLk=" + tradeVolInLk +
-                ", tradeValInCr=" + tradeValInCr +
-                ", totMarCapInCr=" + totMarCapInCr +
-                ", ffMarCapInCr=" + ffMarCapInCr +
-                ", impactCost=" + impactCost +
-                ", perTradedQty=" + perTradedQty +
-                ", appMarRate=" + appMarRate +
-                ", faceValue=" + faceValue +
-                ", high52=" + high52 +
-                ", high52Dt=" + high52Dt +
-                ", low52=" + low52 +
-                ", low52Dt=" + low52Dt +
-                ", upperBand=" + upperBand +
-                ", lowerBand=" + lowerBand +
-                ", priceBand='" + priceBand + '\'' +
-                ", listedStatus='" + listedStatus + '\'' +
-                ", listedDt=" + listedDt +
-                ", tradingStatus='" + tradingStatus + '\'' +
-                ", adjustedPE=" + adjustedPE +
-                ", symbolPE=" + symbolPE +
-                ", sectoralIndex='" + sectoralIndex + '\'' +
-                ", basicIndustry='" + basicIndustry + '\'' +
-                ", boardStatus='" + boardStatus + '\'' +
-                ", tradingSegment='" + tradingSegment + '\'' +
-                ", sharesClass='" + sharesClass + '\'' +
-                ", corpActions=" + Arrays.toString(corpActions) +
-                ", financialResults=" + Arrays.toString(financialResults) +
-                ", shareholdingPatterns=" + Arrays.toString(shareholdingPatterns) +
-                '}';
+        return new StringJoiner(", ", RefData.class.getSimpleName() + "[", "]")
+                .add("symbol='" + symbol + "'")
+                .add("name='" + name + "'")
+                .add("isin='" + isin + "'")
+                .add("series='" + series + "'")
+                .add("ltp=" + ltp)
+                .add("prevClose=" + prevClose)
+                .add("open=" + open)
+                .add("high=" + high)
+                .add("low=" + low)
+                .add("buyQty=" + buyQty)
+                .add("sellQty=" + sellQty)
+                .add("tradeVolInLk=" + tradeVolInLk)
+                .add("tradeValInCr=" + tradeValInCr)
+                .add("totMarCapInCr=" + totMarCapInCr)
+                .add("ffMarCapInCr=" + ffMarCapInCr)
+                .add("impactCost=" + impactCost)
+                .add("perTradedQty=" + perTradedQty)
+                .add("appMarRate=" + appMarRate)
+                .add("faceValue=" + faceValue)
+                .add("high52=" + high52)
+                .add("high52Dt=" + high52Dt)
+                .add("low52=" + low52)
+                .add("low52Dt=" + low52Dt)
+                .add("upperBand=" + upperBand)
+                .add("lowerBand=" + lowerBand)
+                .add("priceBand='" + priceBand + "'")
+                .add("listedStatus='" + listedStatus + "'")
+                .add("listedDt=" + listedDt)
+                .add("tradingStatus='" + tradingStatus + "'")
+                .add("adjustedPE=" + adjustedPE)
+                .add("symbolPE=" + symbolPE)
+                .add("sectoralIndex='" + sectoralIndex + "'")
+                .add("basicIndustry='" + basicIndustry + "'")
+                .add("boardStatus='" + boardStatus + "'")
+                .add("tradingSegment='" + tradingSegment + "'")
+                .add("sharesClass='" + sharesClass + "'")
+                .add("totIncomeInCr=" + totIncomeInCr)
+                .add("netPnLInCr=" + netPnLInCr)
+                .add("earningsPerShare=" + earningsPerShare)
+                .add("promoterSHP=" + promoterSHP)
+                .add("publicSHP=" + publicSHP)
+                .add("corpActions=" + Arrays.toString(corpActions))
+                .add("financialResults=" + Arrays.toString(financialResults))
+                .add("shareholdingPatterns=" + Arrays.toString(shareholdingPatterns))
+                .toString();
     }
 }

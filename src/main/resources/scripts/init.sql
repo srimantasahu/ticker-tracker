@@ -38,6 +38,7 @@ CREATE SCHEMA IF NOT EXISTS stocks
 CREATE TABLE IF NOT EXISTS stocks.refdata
 (
     symbol character varying(25) COLLATE pg_catalog."default" NOT NULL,
+    name character varying(80),
     isin character(12),
     ltp double precision NOT NULL,
     low_52w double precision NOT NULL,
@@ -103,6 +104,7 @@ ALTER TABLE IF EXISTS stocks.refdata
 -- ALTER TABLE stocks.refdata ADD COLUMN earnings_share double precision;
 -- ALTER TABLE stocks.refdata ADD COLUMN promoter_holding double precision;
 -- ALTER TABLE stocks.refdata ADD COLUMN public_holding double precision;
+-- ALTER TABLE stocks.refdata ADD COLUMN name character varying(80);
 
 
 ------------------------------------------------------------------------------------------------------------------------

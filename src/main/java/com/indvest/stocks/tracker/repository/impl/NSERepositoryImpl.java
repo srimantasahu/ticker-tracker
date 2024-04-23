@@ -80,6 +80,26 @@ public class NSERepositoryImpl implements NSERepository {
         final StringBuilder updateQuery = new StringBuilder("UPDATE stocks.refdata SET ");
         final Map<String, Object> refDataMap = new HashMap<>();
 
+        if (refData.getLtp() != null) {
+            updateQuery.append("ltp = :ltp, ");
+            refDataMap.put("ltp", refData.getLtp());
+        }
+        if (refData.getPrevClose() != null) {
+            updateQuery.append("prev_close = :prev_close, ");
+            refDataMap.put("prev_close", refData.getPrevClose());
+        }
+        if (refData.getOpen() != null) {
+            updateQuery.append("open = :open, ");
+            refDataMap.put("open", refData.getOpen());
+        }
+        if (refData.getHigh() != null) {
+            updateQuery.append("high = :high, ");
+            refDataMap.put("high", refData.getHigh());
+        }
+        if (refData.getLow() != null) {
+            updateQuery.append("low = :low, ");
+            refDataMap.put("low", refData.getLow());
+        }
         if (refData.getBuyQty() != null) {
             updateQuery.append("buy_qty = :buy_qty, ");
             refDataMap.put("buy_qty", refData.getBuyQty());
@@ -226,12 +246,17 @@ public class NSERepositoryImpl implements NSERepository {
         if (refDataMap.isEmpty()) {
             log.error("Nothing scraped for symbol: {}", refData.getSymbol());
             refDataMap.put("status", SKIPPED.name());
-        } else if (Stream.of(refData.getTotMarCapInCr(), refData.getSymbolPE()).anyMatch(Objects::isNull)) {
+        } else if (Stream.of(refData.getLtp(), refData.getTotMarCapInCr(), refData.getSymbolPE()).anyMatch(Objects::isNull)) {
             refDataMap.put("status", BASIC_MISSING.name());
         } else if (Stream.of(refData.getEarningsPerShare(), refData.getPublicSHP()).anyMatch(Objects::isNull)) {
             refDataMap.put("status", AUX_MISSING.name());
         } else {
             refDataMap.put("status", UPDATED.name());
+        }
+
+        if (refData.getIsin() != null) {
+            updateQuery.append("name = :name, ");
+            refDataMap.put("name", refData.getName());
         }
 
         if (refData.getIsin() != null) {

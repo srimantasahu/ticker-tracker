@@ -234,8 +234,40 @@ public class NSEService {
             String text = getText(driver, By.xpath("//*[@id=\"quoteName\"]"));
 
             log.info("Instrument Name & ISIN: {}", text);
-            if (isValidText.test(text))
+            if (isValidText.test(text)) {
+                refData.setName(StringUtils.substringBefore(text, "(").trim());
                 refData.setIsin(StringUtils.substringBetween(text, "(", ")"));
+            }
+
+            // update ltp, prev close open high low and series
+            text = getText(driver, By.xpath("//*[@id=\"quoteLtp\"]"));
+            log.info("ltp: {}", text);
+            if (isValidText.test(text))
+                refData.setLtp(parseDouble(text));
+
+            text = getText(driver, By.xpath("//*[@id=\"priceInfoTable\"]"));
+            log.info("pricing info: \n{}", text);
+            if (isValidText.test(text)) {
+                text = getText(driver, By.xpath("//*[@id=\"priceInfoTable\"]/tbody/tr/td[1]"));
+                log.info("prev close: {}", text);
+                if (isValidText.test(text))
+                    refData.setPrevClose(parseDouble(text));
+
+                text = getText(driver, By.xpath("//*[@id=\"priceInfoTable\"]/tbody/tr/td[2]"));
+                log.info("open: {}", text);
+                if (isValidText.test(text))
+                    refData.setOpen(parseDouble(text));
+
+                text = getText(driver, By.xpath("//*[@id=\"priceInfoTable\"]/tbody/tr/td[3]"));
+                log.info("high: {}", text);
+                if (isValidText.test(text))
+                    refData.setHigh(parseDouble(text));
+
+                text = getText(driver, By.xpath("//*[@id=\"priceInfoTable\"]/tbody/tr/td[4]"));
+                log.info("low: {}", text);
+                if (isValidText.test(text))
+                    refData.setLow(parseDouble(text));
+            }
 
             text = getText(driver, By.xpath("//*[@id=\"orderBuyTq\"]"));
             log.info("buy qty: {}", text);
