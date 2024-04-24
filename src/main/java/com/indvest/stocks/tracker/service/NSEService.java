@@ -24,10 +24,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static com.indvest.stocks.tracker.bean.DbStatus.*;
@@ -213,6 +210,25 @@ public class NSEService {
             log.error("Error message: {}", e.getMessage());
             return new StatusMessage(Status.ERROR, e.getMessage());
         }
+    }
+
+    public StatusBody getStocksData(String industry, String type) {
+        log.info("Querying instrument ref data");
+        if (Stream.of(MarketType.values()).noneMatch(sts -> sts.name().equals(type))) {
+            return new StatusBody(INVALID, "Require a valid market type", null);
+        }
+
+        try {
+            log.info("Querying instrument data for type: {} and industry : {}", type, industry);
+
+            final List<RefDataResult> results = nseRepository.getInstruments(MarketType.valueOf(type), industry);
+
+            return new StatusBody(SUCCESS, "Queried successfully", results);
+        } catch (Exception e) {
+            log.error("Error message: {}", e.getMessage());
+            return new StatusBody(Status.ERROR, e.getMessage(), null);
+        }
+
     }
 
     private RefData extractRefData(String symbol, WebDriver driver, FluentWait<WebDriver> wait) throws Exception {

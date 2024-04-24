@@ -139,6 +139,33 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "query-nse-instruments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/ticker-tracker/nse/refresh?status=FAILED",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"ticker-tracker",
+						"nse",
+						"refresh"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "FAILED"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

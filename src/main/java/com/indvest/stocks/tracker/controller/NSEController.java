@@ -1,7 +1,6 @@
 package com.indvest.stocks.tracker.controller;
 
-import com.indvest.stocks.tracker.bean.Response;
-import com.indvest.stocks.tracker.bean.StatusMessage;
+import com.indvest.stocks.tracker.bean.*;
 import com.indvest.stocks.tracker.service.NSEService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +58,14 @@ public class NSEController {
         StatusMessage statusMessage = nseService.reloadStocksData(type);
         log.info("Refreshing of instruments resulted: {}, with message: {}", statusMessage.status(), statusMessage.message());
         return new Response(type, statusMessage.status(), statusMessage.message());
+    }
+
+    @GetMapping("query")
+    public ResponseBody query(@RequestParam String industry, @RequestParam String type) {
+        log.info("Query received for industry : {} and type : {}", industry, type);
+        StatusBody statusBody = nseService.getStocksData(industry, type);
+        log.info("Querying of instruments resulted: {}, with results: {}", statusBody.status(), statusBody.results());
+        return new ResponseBody(new QueryParams(industry, type), statusBody.status(), statusBody.results(), statusBody.message());
     }
 
 }

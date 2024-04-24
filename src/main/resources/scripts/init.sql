@@ -105,6 +105,7 @@ ALTER TABLE IF EXISTS stocks.refdata
 -- ALTER TABLE stocks.refdata ADD COLUMN promoter_holding double precision;
 -- ALTER TABLE stocks.refdata ADD COLUMN public_holding double precision;
 -- ALTER TABLE stocks.refdata ADD COLUMN name character varying(80);
+-- ALTER TABLE stocks.refdata ALTER COLUMN name TYPE character varying(120)
 
 
 ------------------------------------------------------------------------------------------------------------------------

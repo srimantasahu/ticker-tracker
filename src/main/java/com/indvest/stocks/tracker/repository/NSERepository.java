@@ -3,6 +3,7 @@ package com.indvest.stocks.tracker.repository;
 
 import com.indvest.stocks.tracker.bean.MarketType;
 import com.indvest.stocks.tracker.bean.RefData;
+import com.indvest.stocks.tracker.bean.RefDataResult;
 
 import java.util.List;
 import java.util.Map;
@@ -16,4 +17,6 @@ public interface NSERepository {
     List<String> getInstruments(List<String> statuses);
 
     List<String> getInstruments(MarketType marketType);
+
+    List<RefDataResult> getInstruments(MarketType marketType, String industry);
 }

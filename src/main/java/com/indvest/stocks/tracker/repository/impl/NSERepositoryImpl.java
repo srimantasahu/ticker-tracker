@@ -1,20 +1,20 @@
 package com.indvest.stocks.tracker.repository.impl;
 
-import com.indvest.stocks.tracker.bean.DbStatus;
-import com.indvest.stocks.tracker.bean.MarketType;
-import com.indvest.stocks.tracker.bean.RefData;
-import com.indvest.stocks.tracker.bean.Status;
+import com.indvest.stocks.tracker.bean.*;
 import com.indvest.stocks.tracker.repository.NSERepository;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -285,29 +285,75 @@ public class NSERepositoryImpl implements NSERepository {
 
     @Override
     public List<String> getInstruments(MarketType marketType) {
-        final StringBuilder symbolsQuery = new StringBuilder("SELECT symbol FROM stocks.refdata WHERE symbol NOT LIKE 'NIFTY%' AND inst_updated_at < (:updated_at) ");
+        final StringBuilder symbolsQuery = new StringBuilder("SELECT symbol FROM stocks.refdata WHERE symbol NOT LIKE 'NIFTY%' AND inst_updated_at < :updated_at");
         final Map<String, Object> params = new HashMap<>();
 
         switch (marketType) {
             case LARGE_CAP -> {
-                symbolsQuery.append("AND tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 100)");
+                symbolsQuery.append(" AND tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 100)");
             }
             case MID_CAP -> {
-                symbolsQuery.append("AND tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 100)");
-                symbolsQuery.append("AND tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 250)");
+                symbolsQuery.append(" AND tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 100)");
+                symbolsQuery.append(" AND tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 250)");
             }
             case SMALL_CAP -> {
-                symbolsQuery.append("AND tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 250)");
-                symbolsQuery.append("AND tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)");
+                symbolsQuery.append(" AND tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 250)");
+                symbolsQuery.append(" AND tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)");
             }
             case MICRO_CAP -> {
-                symbolsQuery.append("AND tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)");
+                symbolsQuery.append(" AND tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)");
             }
         }
 
         params.put("updated_at", Timestamp.valueOf(LocalDateTime.now().minusMinutes(reloadIntervalMins)));
 
         return namedJdbcTemplate.queryForList(symbolsQuery.toString(), params, String.class);
+    }
+
+    @Override
+    public List<RefDataResult> getInstruments(MarketType marketType, String industry) {
+        final StringBuilder symbolsQuery = new StringBuilder("SELECT * FROM stocks.refdata WHERE symbol NOT LIKE 'NIFTY%' AND basic_industry = :basic_industry");
+        final Map<String, Object> params = Collections.singletonMap("basic_industry", industry);
+
+        switch (marketType) {
+            case LARGE_CAP -> {
+                symbolsQuery.append(" AND tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 100)");
+            }
+            case MID_CAP -> {
+                symbolsQuery.append(" AND tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 100)");
+                symbolsQuery.append(" AND tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 250)");
+            }
+            case SMALL_CAP -> {
+                symbolsQuery.append(" AND tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 250)");
+                symbolsQuery.append(" AND tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)");
+            }
+            case MICRO_CAP -> {
+                symbolsQuery.append(" AND tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)");
+            }
+        }
+
+        symbolsQuery.append(" ORDER BY ltp");
+
+        return namedJdbcTemplate.query(symbolsQuery.toString(), params, (rs, rowNum) -> {
+            RefDataResult result = new RefDataResult();
+            result.setRowNum(rowNum);
+            result.setSymbol(rs.getString("symbol"));
+            result.setName(rs.getString("name"));
+            result.setLtp(rs.getDouble("ltp"));
+            result.setLow52w(rs.getDouble("low_52w"));
+            result.setHigh52w(rs.getDouble("high_52w"));
+            result.setAdjustedPE(rs.getDouble("adjusted_pe"));
+            result.setSymbolPE(rs.getDouble("symbol_pe"));
+            result.setTotalMarketCapInCr(rs.getDouble("tot_mar_cap_cr"));
+            result.setEarningsPerShare(rs.getDouble("earnings_share"));
+            result.setFaceVal(rs.getDouble("face_val"));
+            result.setPerChange30D(rs.getDouble("per_chng_30d"));
+            result.setPerChange365D(rs.getDouble("per_chng_365d"));
+            result.setPromoterHolding(rs.getDouble("promoter_holding"));
+            result.setPublicHolding(rs.getDouble("public_holding"));
+            result.setSectoralIndex(rs.getString("sect_index"));
+            return result;
+        });
     }
 
 }
