@@ -309,7 +309,7 @@ public class NSERepositoryImpl implements NSERepository {
     @Override
     public List<RefDataResult> getInstruments(String industry, MarketType marketType, String orderBy) {
         final StringBuilder symbolsQuery = new StringBuilder("SELECT * FROM stocks.refdata WHERE symbol NOT LIKE 'NIFTY%' AND basic_industry = :basic_industry");
-        final Map<String, Object> params = Map.of("basic_industry", industry, "order_by", orderBy);
+        final Map<String, Object> params = Map.of("basic_industry", industry);
 
         switch (marketType) {
             case LARGE_CAP -> {
@@ -328,7 +328,7 @@ public class NSERepositoryImpl implements NSERepository {
             }
         }
 
-        symbolsQuery.append(" ORDER BY :order_by");
+        symbolsQuery.append(" ORDER BY ").append(orderBy);
 
         return namedJdbcTemplate.query(symbolsQuery.toString(), params, (rs, rowNum) -> {
             RefDataResult result = new RefDataResult();

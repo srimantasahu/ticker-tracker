@@ -146,7 +146,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8085/ticker-tracker/nse/query?industry=Pharmaceuticals&type=SMALL_CAP",
+					"raw": "http://localhost:8085/ticker-tracker/nse/query?industry=Pharmaceuticals&type=SMALL_CAP&order=ltp desc",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -165,6 +165,10 @@
 						{
 							"key": "type",
 							"value": "SMALL_CAP"
+						},
+						{
+							"key": "order",
+							"value": "ltp desc"
 						}
 					]
 				}
