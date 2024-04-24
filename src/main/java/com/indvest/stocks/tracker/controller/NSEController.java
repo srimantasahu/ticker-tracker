@@ -61,10 +61,10 @@ public class NSEController {
     }
 
     @GetMapping("query")
-    public ResponseBody query(@RequestParam String industry, @RequestParam String type) {
-        log.info("Query received for industry : {} and type : {}", industry, type);
-        StatusBody statusBody = nseService.getStocksData(industry, type);
-        log.info("Querying of instruments resulted: {}, with results: {}", statusBody.status(), statusBody.results());
+    public ResponseBody query(@RequestParam String industry, @RequestParam String type, @RequestParam String order) {
+        log.info("Query received for industry: {}, type: {}, and order by: {} ", industry, type, order);
+        StatusBody statusBody = nseService.getStocksData(industry, type, order);
+        log.info("Querying of instruments resulted: {}, with results count: {}", statusBody.status(), statusBody.results().size());
         return new ResponseBody(new QueryParams(industry, type), statusBody.status(), statusBody.results(), statusBody.message());
     }
 

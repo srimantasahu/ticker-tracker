@@ -212,16 +212,16 @@ public class NSEService {
         }
     }
 
-    public StatusBody getStocksData(String industry, String type) {
+    public StatusBody getStocksData(String industry, String type, String orderBy) {
         log.info("Querying instrument ref data");
         if (Stream.of(MarketType.values()).noneMatch(sts -> sts.name().equals(type))) {
             return new StatusBody(INVALID, "Require a valid market type", null);
         }
 
         try {
-            log.info("Querying instrument data for type: {} and industry : {}", type, industry);
+            log.info("Querying instrument data for industry: {}, type: {}, and order by: {}", industry, type, orderBy);
 
-            final List<RefDataResult> results = nseRepository.getInstruments(MarketType.valueOf(type), industry);
+            final List<RefDataResult> results = nseRepository.getInstruments(industry, MarketType.valueOf(type), orderBy);
 
             return new StatusBody(SUCCESS, "Queried successfully", results);
         } catch (Exception e) {

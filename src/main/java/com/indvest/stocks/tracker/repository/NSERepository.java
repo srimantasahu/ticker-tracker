@@ -18,5 +18,5 @@ public interface NSERepository {
 
     List<String> getInstruments(MarketType marketType);
 
-    List<RefDataResult> getInstruments(MarketType marketType, String industry);
+    List<RefDataResult> getInstruments(String industry, MarketType marketType, String orderBy);
 }

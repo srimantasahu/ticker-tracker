@@ -276,9 +276,7 @@ public class NSERepositoryImpl implements NSERepository {
     @Override
     public List<String> getInstruments(List<String> statuses) {
         final String symbolsQuery = "SELECT symbol FROM stocks.refdata WHERE status IN (:status) AND symbol NOT LIKE 'NIFTY%' AND inst_updated_at < (:updated_at)";
-        final Map<String, Object> params = new HashMap<>();
-        params.put("status", statuses);
-        params.put("updated_at", Timestamp.valueOf(LocalDateTime.now().minusMinutes(refreshIntervalMins)));
+        final Map<String, Object> params = Map.of("status", statuses,"updated_at", Timestamp.valueOf(LocalDateTime.now().minusMinutes(refreshIntervalMins)));
 
         return namedJdbcTemplate.queryForList(symbolsQuery, params, String.class);
     }
@@ -286,7 +284,7 @@ public class NSERepositoryImpl implements NSERepository {
     @Override
     public List<String> getInstruments(MarketType marketType) {
         final StringBuilder symbolsQuery = new StringBuilder("SELECT symbol FROM stocks.refdata WHERE symbol NOT LIKE 'NIFTY%' AND inst_updated_at < :updated_at");
-        final Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = Map.of("updated_at", Timestamp.valueOf(LocalDateTime.now().minusMinutes(reloadIntervalMins)));
 
         switch (marketType) {
             case LARGE_CAP -> {
@@ -304,16 +302,14 @@ public class NSERepositoryImpl implements NSERepository {
                 symbolsQuery.append(" AND tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)");
             }
         }
-
-        params.put("updated_at", Timestamp.valueOf(LocalDateTime.now().minusMinutes(reloadIntervalMins)));
 
         return namedJdbcTemplate.queryForList(symbolsQuery.toString(), params, String.class);
     }
 
     @Override
-    public List<RefDataResult> getInstruments(MarketType marketType, String industry) {
+    public List<RefDataResult> getInstruments(String industry, MarketType marketType, String orderBy) {
         final StringBuilder symbolsQuery = new StringBuilder("SELECT * FROM stocks.refdata WHERE symbol NOT LIKE 'NIFTY%' AND basic_industry = :basic_industry");
-        final Map<String, Object> params = Collections.singletonMap("basic_industry", industry);
+        final Map<String, Object> params = Map.of("basic_industry", industry, "order_by", orderBy);
 
         switch (marketType) {
             case LARGE_CAP -> {
@@ -332,7 +328,7 @@ public class NSERepositoryImpl implements NSERepository {
             }
         }
 
-        symbolsQuery.append(" ORDER BY ltp");
+        symbolsQuery.append(" ORDER BY :order_by");
 
         return namedJdbcTemplate.query(symbolsQuery.toString(), params, (rs, rowNum) -> {
             RefDataResult result = new RefDataResult();
