@@ -7,12 +7,12 @@ public class RefDataResult {
     private String name;
     private String symbol;
     private Double ltp;
-    private Double adjustedPE;
-    private Double symbolPE;
     private Double low52w;
     private Double high52w;
-    private Double faceVal;
+    private Double adjustedPE;
+    private Double symbolPE;
     private Double earningsPerShare;
+    private Double faceVal;
     private Double perChange30D;
     private Double perChange365D;
     private Double promoterHolding;
@@ -45,22 +45,6 @@ public class RefDataResult {
         this.ltp = ltp;
     }
 
-    public Double getAdjustedPE() {
-        return adjustedPE;
-    }
-
-    public void setAdjustedPE(Double adjustedPE) {
-        this.adjustedPE = adjustedPE;
-    }
-
-    public Double getSymbolPE() {
-        return symbolPE;
-    }
-
-    public void setSymbolPE(Double symbolPE) {
-        this.symbolPE = symbolPE;
-    }
-
     public Double getLow52w() {
         return low52w;
     }
@@ -77,12 +61,20 @@ public class RefDataResult {
         this.high52w = high52w;
     }
 
-    public Double getFaceVal() {
-        return faceVal;
+    public Double getAdjustedPE() {
+        return adjustedPE;
     }
 
-    public void setFaceVal(Double faceVal) {
-        this.faceVal = faceVal;
+    public void setAdjustedPE(Double adjustedPE) {
+        this.adjustedPE = adjustedPE;
+    }
+
+    public Double getSymbolPE() {
+        return symbolPE;
+    }
+
+    public void setSymbolPE(Double symbolPE) {
+        this.symbolPE = symbolPE;
     }
 
     public Double getEarningsPerShare() {
@@ -91,6 +83,14 @@ public class RefDataResult {
 
     public void setEarningsPerShare(Double earningsPerShare) {
         this.earningsPerShare = earningsPerShare;
+    }
+
+    public Double getFaceVal() {
+        return faceVal;
+    }
+
+    public void setFaceVal(Double faceVal) {
+        this.faceVal = faceVal;
     }
 
     public Double getPerChange30D() {
