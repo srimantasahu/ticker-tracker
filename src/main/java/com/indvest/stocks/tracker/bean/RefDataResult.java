@@ -2,17 +2,15 @@ package com.indvest.stocks.tracker.bean;
 
 public class RefDataResult {
 
-    //symbol, name, low_52w, ltp, high_52w, adjusted_pe, symbol_pe, tot_mar_cap_cr, earnings_share, face_val, per_chng_365d, per_chng_30d, promoter_holding, public_holding, sect_index
-
     private String name;
     private String symbol;
     private Double ltp;
-    private Double low52w;
     private Double high52w;
-    private Double adjustedPE;
+    private Double low52w;
     private Double symbolPE;
-    private Double earningsPerShare;
     private Double faceVal;
+    private Double earningsPerShare;
+    private Double adjustedPE;
     private Double perChange30D;
     private Double perChange365D;
     private Double promoterHolding;
@@ -45,14 +43,6 @@ public class RefDataResult {
         this.ltp = ltp;
     }
 
-    public Double getLow52w() {
-        return low52w;
-    }
-
-    public void setLow52w(Double low52w) {
-        this.low52w = low52w;
-    }
-
     public Double getHigh52w() {
         return high52w;
     }
@@ -61,12 +51,12 @@ public class RefDataResult {
         this.high52w = high52w;
     }
 
-    public Double getAdjustedPE() {
-        return adjustedPE;
+    public Double getLow52w() {
+        return low52w;
     }
 
-    public void setAdjustedPE(Double adjustedPE) {
-        this.adjustedPE = adjustedPE;
+    public void setLow52w(Double low52w) {
+        this.low52w = low52w;
     }
 
     public Double getSymbolPE() {
@@ -77,6 +67,14 @@ public class RefDataResult {
         this.symbolPE = symbolPE;
     }
 
+    public Double getFaceVal() {
+        return faceVal;
+    }
+
+    public void setFaceVal(Double faceVal) {
+        this.faceVal = faceVal;
+    }
+
     public Double getEarningsPerShare() {
         return earningsPerShare;
     }
@@ -85,12 +83,12 @@ public class RefDataResult {
         this.earningsPerShare = earningsPerShare;
     }
 
-    public Double getFaceVal() {
-        return faceVal;
+    public Double getAdjustedPE() {
+        return adjustedPE;
     }
 
-    public void setFaceVal(Double faceVal) {
-        this.faceVal = faceVal;
+    public void setAdjustedPE(Double adjustedPE) {
+        this.adjustedPE = adjustedPE;
     }
 
     public Double getPerChange30D() {

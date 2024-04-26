@@ -1,8 +1,10 @@
 {
 	"info": {
-		"_postman_id": "d5916988-2c59-4c6d-9620-82fb872617c6",
+		"_postman_id": "c2e169af-875f-4d11-9534-bf9bb10e0e01",
 		"name": "TickerTracker",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34337758",
+		"_collection_link": "https://ticker-tracker.postman.co/workspace/Team-Workspace~1184e414-42fe-4797-8a0b-4ab7c976aef0/collection/34337758-c2e169af-875f-4d11-9534-bf9bb10e0e01?action=share&source=collection_link&creator=34337758"
 	},
 	"item": [
 		{
@@ -146,7 +148,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8085/ticker-tracker/nse/query?industry=Pharmaceuticals&type=SMALL_CAP&order=ltp desc",
+					"raw": "http://localhost:8085/ticker-tracker/nse/query?industry=Pharmaceuticals&type=ALL&order=ltp/face_val",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -164,11 +166,11 @@
 						},
 						{
 							"key": "type",
-							"value": "SMALL_CAP"
+							"value": "ALL"
 						},
 						{
 							"key": "order",
-							"value": "ltp desc"
+							"value": "ltp/face_val"
 						}
 					]
 				}
