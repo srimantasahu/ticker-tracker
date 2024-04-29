@@ -1,20 +1,20 @@
 package com.indvest.stocks.tracker.repository.impl;
 
-import com.indvest.stocks.tracker.bean.*;
+import com.indvest.stocks.tracker.bean.InstrumentType;
+import com.indvest.stocks.tracker.bean.MarketType;
+import com.indvest.stocks.tracker.bean.RefData;
+import com.indvest.stocks.tracker.bean.RefDataResult;
 import com.indvest.stocks.tracker.repository.NSERepository;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -255,14 +255,17 @@ public class NSERepositoryImpl implements NSERepository {
             refDataMap.put("status", UPDATED.name());
         }
 
-        if (refData.getIsin() != null) {
+        if (refData.getName() != null) {
             updateQuery.append("name = :name, ");
             refDataMap.put("name", refData.getName());
         }
-
         if (refData.getIsin() != null) {
             updateQuery.append("isin = :isin, ");
             refDataMap.put("isin", refData.getIsin());
+        }
+        if (refData.getSeries() != null) {
+            updateQuery.append("series = :series, ");
+            refDataMap.put("series", refData.getSeries());
         }
 
         updateQuery.append("inst_updated_at = :inst_updated_at, status = :status WHERE symbol = :symbol");
@@ -277,7 +280,7 @@ public class NSERepositoryImpl implements NSERepository {
     @Override
     public List<String> getInstruments(List<String> statuses) {
         final String symbolsQuery = "SELECT symbol FROM stocks.refdata WHERE status IN (:status) AND symbol NOT LIKE 'NIFTY%' AND inst_updated_at < (:updated_at)";
-        final Map<String, Object> params = Map.of("status", statuses,"updated_at", Timestamp.valueOf(LocalDateTime.now().minusMinutes(refreshIntervalMins)));
+        final Map<String, Object> params = Map.of("status", statuses, "updated_at", Timestamp.valueOf(LocalDateTime.now().minusMinutes(refreshIntervalMins)));
 
         return namedJdbcTemplate.queryForList(symbolsQuery, params, String.class);
     }

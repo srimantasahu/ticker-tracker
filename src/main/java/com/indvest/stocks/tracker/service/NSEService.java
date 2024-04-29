@@ -293,6 +293,11 @@ public class NSEService {
                     refData.setLow(parseDouble(text));
             }
 
+            text = getText(driver, By.xpath("//*[@id=\"seriesheader\"]/li"));
+            log.info("series: {}", text);
+            if (isValidText.test(text))
+                refData.setSeries(text.trim());
+
             text = getText(driver, By.xpath("//*[@id=\"orderBuyTq\"]"));
             log.info("buy qty: {}", text);
             if (isValidText.test(text))
