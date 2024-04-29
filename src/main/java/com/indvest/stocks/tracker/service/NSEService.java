@@ -38,6 +38,12 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class NSEService {
     private static final Logger log = LoggerFactory.getLogger(NSEService.class);
 
+    @Value("${equity.market.url}")
+    private String equityMarketUrl;
+
+    @Value("${sme.market.url}")
+    private String smeMarketUrl;
+
     @Value("${nse.download.path}")
     private String downloadPath;
 
@@ -72,11 +78,11 @@ public class NSEService {
 
         WebDriverAndWait driverAndWait = getWebDriverAndWait(downloadPath, false, dwldWaitTimeout, dwldPollInterval);
 
+        final String dwldUrl = Objects.equals(InstrumentType.get(entity), InstrumentType.EQUITY) ? (equityMarketUrl + UrlEscapers.urlFragmentEscaper().escape(entity)) : smeMarketUrl;
+
         try {
             // connecting to the target web page
-            driverAndWait.driver().get("https://www.nseindia.com/market-data/live-equity-market?symbol=" + UrlEscapers.urlFragmentEscaper().escape(entity));
-
-            Thread.sleep(dwldSleepTime);
+            driverAndWait.driver().get(dwldUrl);
 
             driverAndWait.fluentWait().until(d -> ((JavascriptExecutor) driverAndWait.driver()).executeScript("return document.readyState").equals("complete"));
             driverAndWait.fluentWait().until(d -> ((JavascriptExecutor) driverAndWait.driver()).executeScript("return jQuery.active == 0"));
@@ -92,9 +98,11 @@ public class NSEService {
                 log.info("Deleted existing file: {}", file.delete());
             }
 
-            WebElement dwldcsv = driverAndWait.driver().findElement(By.linkText("Download (.csv)"));
+            WebElement dwldcsv = driverAndWait.driver().findElement(By.partialLinkText(("Download (.csv)")));
 
             dwldcsv.click();
+
+            log.info("Clicked on download csv");
 
             Thread.sleep(dwldSleepTime);
 
@@ -126,7 +134,7 @@ public class NSEService {
         try {
             List<Map<String, String>> refDataList = loadRefData(expectedFileName);
             log.info("Extracted ref data list size: {}", refDataList.size());
-            nseRepository.save(refDataList);
+            nseRepository.save(refDataList, InstrumentType.get(entity));
         } catch (Exception e) {
             log.error("Error message: {}", e.getMessage());
             return new StatusMessage(Status.ERROR, e.getMessage());

@@ -299,29 +299,30 @@ per_chng_365d asc;
 ------------------------------------------------------------------------------------------------------------------------
 
 
--- master query
+-- master query for instruments
+-- 'BEL','DCXINDIA','INDIGO','DREAMFOLKS','GMRINFRA','NATIONALUM','DELTACORP','MSUMI','MOTHERSON','JAMNAAUTO','UNIPARTS','ADVENZYMES','TI','SULA','GLOBUSSPR','FSL','PCBL','HAPPYFORGE','SANGHIIND','PRSMJOHNSN','HEIDELBERG','INDIACEM','RAMCOCEM','KAJARIACER','JPASSOCIAT','HCC','RAMKY','PATELENG','PSPPROJECT','NBCC','ASHOKLEY','GHCL','DEEPAKFERT','GREAVESCOT','KIRLOSENG','IKIO','HERITGFOOD','NAZARA','SINDHUTRAD','HEMIPROP','ITC','EMIL','RTNINDIA','AWL','IMFA','PARADEEP','NFL','RCF','PVRINOX','IFCI','IRFC','HUDCO','INFIBEAM','CAMPUS','BATAINDIA','SFL','RESPONIND','ARVIND','GOKEX','RAYMOND','GAIL','RAJESHEXPO','NIACL','STARHEALTH','GICRE','ICICIGI','LAOPALA','SYNGENE','KRSNAA','LALPATHLAB','BHEL','IDFC','EDELWEISS','ASTERDM','YATHARTH','FORTIS','MAXHEALTH','JLHL','NH','LEMONTREE','MHRIL','WHIRLPOOL','CROMPTON','ORIENTELEC','TTKPRESTIG','EVEREADY','PNBHOUSING','IBULHSGFIN','LICHSGFIN','BCG','DATAMATICS','TATATECH','MOIL','GMDCLTD','LLOYDSENGG','TEXRAIL','HLEGLAS','RTNPOWER','RELINFRA','L&TFH','RELIGARE','JMFINANCIL','NSLNISP','SAIL','SUNFLAG','SHYAMMETL','JTLIND','SURYAROSNI','WELCORP','PETRONET','CONFIPET','ICICIPRULI','HDFCLIFE','GATEWAY','ALLCARGO','TVSSCS','VRLLOG','CASTROLIND','HMAAGRO','NETWORK18','TARSONS','MUTHOOTMF','SBFC','FEDFINA','M&MFIN','HINDOILEXP','GAEL','LTFOODS','KRBL','UJJIVANSFB','UTKARSHBNK','ESAFSFB','EQUITASBNK','AVALON','DHANI','ALOKINDS','TRIDENT','BOMDYEING','BIKAJI','UFLEX','EPL','INDIGOPNTS','KANSAINER','JKPAPER','WSTCSTPAPR','TATAMTRDVR','M&M','TATAMOTORS','HONASA','BAJAJCON','DABUR','SUMICHEM','IPL','UPL','RAIN','PPLPHARMA','IOLCP','AARTIDRUGS','BIOCON','MEDPLUS','JISLJALEQS','FINPIPE','GREENPLY','CENTURYPLY','GPPL','POWERGRID','JPPOWER','RPOWER','NHPC','PTC','DBCORP','NAVNETEDUL','IDFCFIRSTB','IDBI','YESBANK','DCBBANK','UCOBANK','MAHABANK','CENTRALBK','IOB','IOC','BPCL','DBREALTY','IBREALEST','RBA','DEVYANI','JUBLFOOD','HINDWAREAP','SCI','ABFRL','KALAMANDIR','NOCIL','AETHER','BEPL','CAMLINFINE','FLAIR','IIFLSEC','BAJAJHIND','RENUKA','DEN','HATHWAY','DISHTV','TV18BRDCST','CCL','TATACONSUM','IDEA','TTML','OPTIEMUS','ITI','INDUSTOWER','EASEMYTRIP','THOMASCOOK','BLS','IRCTC','MMTC','PDSL','JKTYRE','APOLLOTYRE','IONEXCHANG','HINDZINC'
 
 select sect_index, basic_industry, symbol, prev_close, ltp, high_52w, low_52w, adjusted_pe, symbol_pe, earnings_share, face_val, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, price_band, buy_qty, sell_qty from stocks.refdata 
 where 1=1
-and symbol IN ('BEL','DCXINDIA','INDIGO','DREAMFOLKS','GMRINFRA','NATIONALUM','DELTACORP','MSUMI','MOTHERSON','JAMNAAUTO','UNIPARTS','ADVENZYMES','TI','SULA','GLOBUSSPR','FSL','PCBL','HAPPYFORGE','SANGHIIND','PRSMJOHNSN','HEIDELBERG','INDIACEM','RAMCOCEM','KAJARIACER','JPASSOCIAT','HCC','RAMKY','PATELENG','PSPPROJECT','NBCC','ASHOKLEY','GHCL','DEEPAKFERT','GREAVESCOT','KIRLOSENG','IKIO','HERITGFOOD','NAZARA','SINDHUTRAD','HEMIPROP','ITC','EMIL','RTNINDIA','AWL','IMFA','PARADEEP','NFL','RCF','PVRINOX','IFCI','IRFC','HUDCO','INFIBEAM','CAMPUS','BATAINDIA','SFL','RESPONIND','ARVIND','GOKEX','RAYMOND','GAIL','RAJESHEXPO','NIACL','STARHEALTH','GICRE','ICICIGI','LAOPALA','SYNGENE','KRSNAA','LALPATHLAB','BHEL','IDFC','EDELWEISS','ASTERDM','YATHARTH','FORTIS','MAXHEALTH','JLHL','NH','LEMONTREE','MHRIL','WHIRLPOOL','CROMPTON','ORIENTELEC','TTKPRESTIG','EVEREADY','PNBHOUSING','IBULHSGFIN','LICHSGFIN','BCG','DATAMATICS','TATATECH','MOIL','GMDCLTD','LLOYDSENGG','TEXRAIL','HLEGLAS','RTNPOWER','RELINFRA','L&TFH','RELIGARE','JMFINANCIL','NSLNISP','SAIL','SUNFLAG','SHYAMMETL','JTLIND','SURYAROSNI','WELCORP','PETRONET','CONFIPET','ICICIPRULI','HDFCLIFE','GATEWAY','ALLCARGO','TVSSCS','VRLLOG','CASTROLIND','HMAAGRO','NETWORK18','TARSONS','MUTHOOTMF','SBFC','FEDFINA','M&MFIN','HINDOILEXP','GAEL','LTFOODS','KRBL','UJJIVANSFB','UTKARSHBNK','ESAFSFB','EQUITASBNK','AVALON','DHANI','ALOKINDS','TRIDENT','BOMDYEING','BIKAJI','UFLEX','EPL','INDIGOPNTS','KANSAINER','JKPAPER','WSTCSTPAPR','TATAMTRDVR','M&M','TATAMOTORS','HONASA','BAJAJCON','DABUR','SUMICHEM','IPL','UPL','RAIN','PPLPHARMA','IOLCP','AARTIDRUGS','BIOCON','MEDPLUS','JISLJALEQS','FINPIPE','GREENPLY','CENTURYPLY','GPPL','POWERGRID','JPPOWER','RPOWER','NHPC','PTC','DBCORP','NAVNETEDUL','IDFCFIRSTB','IDBI','YESBANK','DCBBANK','UCOBANK','MAHABANK','CENTRALBK','IOB','IOC','BPCL','DBREALTY','IBREALEST','RBA','DEVYANI','JUBLFOOD','HINDWAREAP','SCI','ABFRL','KALAMANDIR','NOCIL','AETHER','BEPL','CAMLINFINE','FLAIR','IIFLSEC','BAJAJHIND','RENUKA','DEN','HATHWAY','DISHTV','TV18BRDCST','CCL','TATACONSUM','IDEA','TTML','OPTIEMUS','ITI','INDUSTOWER','EASEMYTRIP','THOMASCOOK','BLS','IRCTC','MMTC','PDSL','JKTYRE','APOLLOTYRE','IONEXCHANG','HINDZINC')
--- and ltp < 150
+and symbol IN ('UTKARSHBNK','SANGHIIND','TV18BRDCST','SINDHUTRAD','ALLCARGO')
+and ltp < 100
 and promoter_holding > 50
-and ltp < (low_52w + high_52w)/2 
+-- and ltp < (low_52w + high_52w)/2 
 -- and (symbol_pe < 30 or adjusted_pe < 30)
 -- and face_val >= 2
 -- and earnings_share > 0
 -- micro cap
--- and tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)
+and tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)
 -- small cap
-and tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 250)
-and tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)
+-- and tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 250)
+-- and tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)
 -- mid cap
 -- and tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 100)
 -- and tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 250)
 -- large cap
 -- and tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 100)
 order by  
-ltp/face_val asc;
+ltp asc;
 
 
 

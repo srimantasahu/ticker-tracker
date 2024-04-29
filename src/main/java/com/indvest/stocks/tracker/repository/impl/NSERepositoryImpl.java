@@ -37,15 +37,15 @@ public class NSERepositoryImpl implements NSERepository {
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
     @Override
-    public void save(final List<Map<String, String>> refDataList) {
-        log.info("Saving RefData list of size: {}", refDataList.size());
+    public void save(final List<Map<String, String>> refDataList, InstrumentType instrumentType) {
+        log.info("Saving RefData list of size: {}, for instrument type: {}", refDataList.size(), instrumentType.name());
 
         final String upsertQuery = String.join(" ",
-                "INSERT INTO stocks.refdata(symbol, ltp, chng, per_chng, open, high, low, prev_close, volume_lk, value_cr, high_52w, low_52w, per_chng_30d, per_chng_365d)",
-                "VALUES(:symbol, :ltp, :chng, :per_chng, :open, :high, :low, :prev_close, :volume_lk, :value_cr, :high_52w, :low_52w, :per_chng_30d, :per_chng_365d)",
+                "INSERT INTO stocks.refdata(symbol, ltp, chng, per_chng, open, high, low, prev_close, volume_lk, value_cr, high_52w, low_52w, per_chng_30d, per_chng_365d, category)",
+                "VALUES(:symbol, :ltp, :chng, :per_chng, :open, :high, :low, :prev_close, :volume_lk, :value_cr, :high_52w, :low_52w, :per_chng_30d, :per_chng_365d, :category)",
                 "ON CONFLICT (symbol)",
                 "DO UPDATE SET ltp = :ltp, chng = :chng, per_chng = :per_chng, open = :open, high = :high, low = :low, prev_close = :prev_close, volume_lk = :volume_lk, value_cr = :value_cr,",
-                "high_52w = :high_52w, low_52w = :low_52w, per_chng_30d = :per_chng_30d, per_chng_365d = :per_chng_365d, file_updated_at = :file_updated_at");
+                "high_52w = :high_52w, low_52w = :low_52w, per_chng_30d = :per_chng_30d, per_chng_365d = :per_chng_365d, category = :category, file_updated_at = :file_updated_at");
 
         List<Map<String, Object>> refDataMap = refDataList.stream().map(refData -> {
             Map<String, Object> map = new HashMap<>();
@@ -53,16 +53,17 @@ public class NSERepositoryImpl implements NSERepository {
             map.put("ltp", Double.parseDouble(refData.get("LTP")));
             map.put("chng", NumberUtils.isParsable(refData.get("CHNG")) ? Double.parseDouble(refData.get("CHNG")) : -999D);
             map.put("per_chng", NumberUtils.isParsable(refData.get("PERCHNG")) ? Double.parseDouble(refData.get("PERCHNG")) : -999D);
-            map.put("open", Double.parseDouble(refData.get("OPEN")));
-            map.put("high", Double.parseDouble(refData.get("HIGH")));
-            map.put("low", Double.parseDouble(refData.get("LOW")));
+            map.put("open", NumberUtils.isParsable(refData.get("OPEN")) ? Double.parseDouble(refData.get("OPEN")) : -999D);
+            map.put("high", NumberUtils.isParsable(refData.get("HIGH")) ? Double.parseDouble(refData.get("HIGH")) : -999D);
+            map.put("low", NumberUtils.isParsable(refData.get("LOW")) ? Double.parseDouble(refData.get("LOW")) : -999D);
             map.put("prev_close", Double.parseDouble(refData.get("PREVCLOSE")));
-            map.put("volume_lk", Long.parseLong(refData.get("VOLUME")) / 100_000D);
-            map.put("value_cr", Double.parseDouble(refData.get("VALUE")));
+            map.put("volume_lk", NumberUtils.isParsable(refData.get("VOLUME")) ? Long.parseLong(refData.get("VOLUME")) / 100_000D : -999D);
+            map.put("value_cr", NumberUtils.isParsable(refData.get("VALUE")) ? Double.parseDouble(refData.get("VALUE")) : -999D);
             map.put("high_52w", Double.parseDouble(refData.get("52WH")));
             map.put("low_52w", Double.parseDouble(refData.get("52WL")));
             map.put("per_chng_30d", NumberUtils.isParsable(refData.get("30DPERCHNG")) ? Double.parseDouble(refData.get("30DPERCHNG")) : -999D);
             map.put("per_chng_365d", NumberUtils.isParsable(refData.get("365DPERCHNG")) ? Double.parseDouble(refData.get("365DPERCHNG")) : -999D);
+            map.put("category", instrumentType.name());
             map.put("file_updated_at", Timestamp.valueOf(LocalDateTime.now()));
             return map;
         }).collect(Collectors.toList());
@@ -70,7 +71,7 @@ public class NSERepositoryImpl implements NSERepository {
         int[] updateResult = namedJdbcTemplate.batchUpdate(upsertQuery, SqlParameterSourceUtils.createBatch(refDataMap));
 
         log.debug("Update result: {}", updateResult);
-        log.info("Update result count: {}, sum: {}", updateResult.length, Arrays.stream(updateResult).sum());
+        log.info("Update result for instrument type: {}, count: {}, sum: {}", instrumentType.name(), updateResult.length, Arrays.stream(updateResult).sum());
     }
 
     @Override

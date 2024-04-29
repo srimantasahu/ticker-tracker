@@ -88,6 +88,8 @@ CREATE TABLE IF NOT EXISTS stocks.refdata
     file_updated_at timestamp default NOW(),
     inst_updated_at timestamp,
     status character varying(20) DEFAULT 'UNKNOWN',
+    series character(2),
+    category character varying(20),
     id bigserial NOT NULL,
     CONSTRAINT refdata_pk PRIMARY KEY (symbol)
 )
@@ -105,7 +107,9 @@ ALTER TABLE IF EXISTS stocks.refdata
 -- ALTER TABLE stocks.refdata ADD COLUMN promoter_holding double precision;
 -- ALTER TABLE stocks.refdata ADD COLUMN public_holding double precision;
 -- ALTER TABLE stocks.refdata ADD COLUMN name character varying(80);
--- ALTER TABLE stocks.refdata ALTER COLUMN name TYPE character varying(120)
+-- ALTER TABLE stocks.refdata ALTER COLUMN name TYPE character varying(120);
+-- ALTER TABLE stocks.refdata ADD COLUMN series character(2);
+-- ALTER TABLE stocks.refdata ADD COLUMN category character varying(20);
 
 
 ------------------------------------------------------------------------------------------------------------------------
