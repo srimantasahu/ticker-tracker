@@ -279,7 +279,7 @@ public class NSERepositoryImpl implements NSERepository {
 
     @Override
     public List<String> getInstruments(List<String> statuses) {
-        final String symbolsQuery = "SELECT symbol FROM stocks.refdata WHERE status IN (:status) AND symbol NOT LIKE 'NIFTY%' AND inst_updated_at < (:updated_at)";
+        final String symbolsQuery = "SELECT symbol FROM stocks.refdata WHERE status IN (:status) AND symbol NOT LIKE 'NIFTY%' AND (inst_updated_at IS null OR inst_updated_at < :updated_at)";
         final Map<String, Object> params = Map.of("status", statuses, "updated_at", Timestamp.valueOf(LocalDateTime.now().minusMinutes(refreshIntervalMins)));
 
         return namedJdbcTemplate.queryForList(symbolsQuery, params, String.class);
@@ -287,8 +287,8 @@ public class NSERepositoryImpl implements NSERepository {
 
     @Override
     public List<String> getInstruments(MarketType marketType) {
-        final StringBuilder symbolsQuery = new StringBuilder("SELECT symbol FROM stocks.refdata WHERE symbol NOT LIKE 'NIFTY%' AND inst_updated_at < :updated_at");
-        final Map<String, Object> params = Map.of("updated_at", Timestamp.valueOf(LocalDateTime.now().minusMinutes(reloadIntervalMins)));
+        final StringBuilder symbolsQuery = new StringBuilder("SELECT symbol FROM stocks.refdata WHERE symbol NOT LIKE 'NIFTY%' AND category IN (:category) AND (inst_updated_at IS null OR inst_updated_at < :updated_at)");
+        final Map<String, Object> params = Map.of("category", InstrumentType.getCategory(marketType.name()), "updated_at", Timestamp.valueOf(LocalDateTime.now().minusMinutes(reloadIntervalMins)));
 
         switch (marketType) {
             case LARGE_CAP -> {
@@ -312,8 +312,8 @@ public class NSERepositoryImpl implements NSERepository {
 
     @Override
     public List<RefDataResult> getInstruments(String industry, MarketType marketType, String orderBy) {
-        final StringBuilder symbolsQuery = new StringBuilder("SELECT * FROM stocks.refdata WHERE symbol NOT LIKE 'NIFTY%' AND basic_industry = :basic_industry");
-        final Map<String, Object> params = Map.of("basic_industry", industry);
+        final StringBuilder symbolsQuery = new StringBuilder("SELECT * FROM stocks.refdata WHERE symbol NOT LIKE 'NIFTY%' AND category IN (:category) AND basic_industry = :basic_industry");
+        final Map<String, Object> params = Map.of("category", InstrumentType.getCategory(marketType.name()), "basic_industry", industry);
 
         switch (marketType) {
             case LARGE_CAP -> {

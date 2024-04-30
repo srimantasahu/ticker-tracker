@@ -6,6 +6,7 @@ public enum MarketType {
     MID_CAP,
     SMALL_CAP,
     MICRO_CAP,
-    ALL
+    SME,
+    ALL;
 
 }

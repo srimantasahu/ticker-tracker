@@ -2,6 +2,7 @@ package com.indvest.stocks.tracker.controller;
 
 import com.indvest.stocks.tracker.bean.*;
 import com.indvest.stocks.tracker.service.NSEService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,7 @@ public class NSEController {
     public ResponseBody query(@RequestParam String industry, @RequestParam String type, @RequestParam String order) {
         log.info("Query received for industry: {}, type: {}, and order by: {} ", industry, type, order);
         StatusBody statusBody = nseService.getStocksData(industry, type, order);
-        log.info("Querying of instruments resulted: {}, with results count: {}", statusBody.status(), statusBody.results().size());
+        log.info("Querying of instruments resulted: {}, with results count: {}", statusBody.status(), CollectionUtils.size(statusBody.results()));
         return new ResponseBody(new QueryParams(industry, type), statusBody.status(), statusBody.results(), statusBody.message());
     }
 
