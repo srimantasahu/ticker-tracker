@@ -235,64 +235,77 @@ order by
 ltp asc;
 
 
--- microcap: pe<5, ltp<20, order: ltp
+-- largecap: ltp<350, pe<35 and +eps
 
-select sect_index, basic_industry, symbol, name, ltp, high_52w, low_52w, prev_close, adjusted_pe, symbol_pe, earnings_share, face_val, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, price_band, buy_qty, sell_qty from stocks.refdata 
+select symbol, name, basic_industry, ltp, high_52w, low_52w, prev_close, adjusted_pe, symbol_pe, earnings_share, face_val, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, price_band, buy_qty, sell_qty, sect_index from stocks.refdata 
 where 1=1
--- and ltp < 100
-and ltp < (low_52w + high_52w)/2 
-and face_val >= 10
-and promoter_holding > 60
--- and promoter_holding > 50
--- and (symbol_pe is null or symbol_pe < 5)
--- and (adjusted_pe is null or adjusted_pe < 5)
-and tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)
+and category = 'EQUITY'
+and ltp < 350
+and (symbol_pe < 35 or adjusted_pe < 35)
+and face_val > 0
+and earnings_share > 0
+and tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 100)
 order by 
-sect_index, ltp asc;
+earnings_share desc;
 
 
--- smallcap: pe<15, ltp<100, order: ltp-low_52w
+-- midcap: ltp<250, pe<25 and +eps
 
-select sect_index, basic_industry, symbol, prev_close, ltp, high_52w, low_52w, adjusted_pe, symbol_pe, earnings_share, face_val, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, price_band, buy_qty, sell_qty from stocks.refdata 
+select symbol, name, basic_industry, ltp, high_52w, low_52w, prev_close, adjusted_pe, symbol_pe, earnings_share, face_val, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, price_band, buy_qty, sell_qty, sect_index from stocks.refdata 
 where 1=1
-and ltp < 500
+and category = 'EQUITY'
+and ltp < 250 
+and (symbol_pe < 25 or adjusted_pe < 25) 
+and face_val > 1
+and earnings_share > 0
 and promoter_holding > 50
-and ltp < (low_52w + high_52w)/2 
--- and (symbol_pe < 30 or adjusted_pe < 30)
--- and face_val >= 2
--- and earnings_share > 0
-and tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 250)
-and tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)
-order by  
-sect_index, ltp asc;
-
-
--- midcap: pe<20, ltp<200 and +eps, order: eps
-
-select sect_index, symbol, ltp, high_52w, low_52w, adjusted_pe, symbol_pe, earnings_share, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, face_val, price_band, buy_qty, sell_qty from stocks.refdata 
-where 1=1
-and ltp < 200
-and ltp < (low_52w + high_52w)/2 
-and (symbol_pe is null or symbol_pe < 20) 
-and (adjusted_pe is null or adjusted_pe < 20)
-and (earnings_share is null or earnings_share > 0) 
 and tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 100)
 and tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 250)
 order by 
 earnings_share desc;
 
--- largecap: pe<30, ltp<500 and +eps, order: 365d change
 
-select sect_index, symbol, ltp, high_52w, low_52w, adjusted_pe, symbol_pe, earnings_share, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, face_val, price_band, buy_qty, sell_qty from stocks.refdata 
+-- smallcap: ltp<250, pe<20 and +eps
+
+select symbol, name, basic_industry, ltp, high_52w, low_52w, prev_close, adjusted_pe, symbol_pe, earnings_share, face_val, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, price_band, buy_qty, sell_qty, sect_index from stocks.refdata 
 where 1=1
-and ltp < 500
-and ltp < (low_52w + high_52w)/2 
-and (symbol_pe is null or symbol_pe < 50) 
-and (adjusted_pe is null or adjusted_pe < 50)
-and (earnings_share is null or earnings_share > 0) 
-and tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 100)
+and category = 'EQUITY'
+and ltp < 250
+and (symbol_pe < 25 or adjusted_pe < 25)
+and face_val > 1
+and earnings_share > 0
+and (promoter_holding is null OR promoter_holding > 50)
+and tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 250)
+and tot_mar_cap_cr >= (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)
+order by  
+earnings_share desc;
+
+
+-- microcap: ltp<250, pe<25 and +eps
+
+select symbol, name, basic_industry, ltp, high_52w, low_52w, prev_close, adjusted_pe, symbol_pe, earnings_share, face_val, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, price_band, buy_qty, sell_qty, sect_index from stocks.refdata 
+where 1=1
+and category = 'EQUITY'
+and ltp < 250
+and (symbol_pe < 25 or adjusted_pe < 25)
+and face_val > 1
+and earnings_share > 0
+and promoter_holding > 50
+and tot_mar_cap_cr < (select tot_mar_cap_cr from (select tot_mar_cap_cr, rank() over (order by tot_mar_cap_cr desc) rank_number from stocks.refdata where tot_mar_cap_cr is not null) rt where rank_number = 500)
 order by 
-per_chng_365d asc;
+earnings_share desc;
+
+-- sme: ltp<200, ph>60 and +eps
+
+select symbol, name, basic_industry, ltp, high_52w, low_52w, prev_close, adjusted_pe, symbol_pe, earnings_share, face_val, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, price_band, buy_qty, sell_qty, sect_index from stocks.refdata 
+where 1=1
+and category = 'SME'
+and ltp < 200
+and face_val > 2
+and earnings_share > 0
+and promoter_holding > 60
+order by 
+earnings_share desc;
 
 
 ------------------------------------------------------------------------------------------------------------------------
