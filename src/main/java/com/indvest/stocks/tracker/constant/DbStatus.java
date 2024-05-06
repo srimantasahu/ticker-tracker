@@ -1,4 +1,4 @@
-package com.indvest.stocks.tracker.bean;
+package com.indvest.stocks.tracker.constant;
 
 public enum DbStatus {
 

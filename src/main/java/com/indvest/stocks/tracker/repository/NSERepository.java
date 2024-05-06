@@ -1,8 +1,8 @@
 package com.indvest.stocks.tracker.repository;
 
 
-import com.indvest.stocks.tracker.bean.InstrumentType;
-import com.indvest.stocks.tracker.bean.MarketType;
+import com.indvest.stocks.tracker.constant.InstrumentType;
+import com.indvest.stocks.tracker.constant.MarketType;
 import com.indvest.stocks.tracker.bean.RefData;
 import com.indvest.stocks.tracker.bean.RefDataResult;
 

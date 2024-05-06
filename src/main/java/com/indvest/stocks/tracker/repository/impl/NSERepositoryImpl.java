@@ -1,7 +1,7 @@
 package com.indvest.stocks.tracker.repository.impl;
 
-import com.indvest.stocks.tracker.bean.InstrumentType;
-import com.indvest.stocks.tracker.bean.MarketType;
+import com.indvest.stocks.tracker.constant.InstrumentType;
+import com.indvest.stocks.tracker.constant.MarketType;
 import com.indvest.stocks.tracker.bean.RefData;
 import com.indvest.stocks.tracker.bean.RefDataResult;
 import com.indvest.stocks.tracker.repository.NSERepository;
@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.indvest.stocks.tracker.bean.DbStatus.*;
+import static com.indvest.stocks.tracker.constant.DbStatus.*;
 
 @Repository
 public class NSERepositoryImpl implements NSERepository {

@@ -2,6 +2,10 @@ package com.indvest.stocks.tracker.service;
 
 import com.google.common.net.UrlEscapers;
 import com.indvest.stocks.tracker.bean.*;
+import com.indvest.stocks.tracker.constant.DbStatus;
+import com.indvest.stocks.tracker.constant.InstrumentType;
+import com.indvest.stocks.tracker.constant.MarketType;
+import com.indvest.stocks.tracker.constant.Status;
 import com.indvest.stocks.tracker.repository.NSERepository;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
@@ -27,8 +31,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static com.indvest.stocks.tracker.bean.DbStatus.*;
-import static com.indvest.stocks.tracker.bean.Status.*;
+import static com.indvest.stocks.tracker.constant.DbStatus.*;
+import static com.indvest.stocks.tracker.constant.Status.*;
 import static com.indvest.stocks.tracker.util.CommonUtil.*;
 import static com.indvest.stocks.tracker.util.SeleniumUtil.*;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
