@@ -79,168 +79,250 @@ public class NSERepositoryImpl implements NSERepository {
     public void save(RefData refData) {
         log.info("Saving RefData: {}", refData);
 
-        final StringBuilder updateQuery = new StringBuilder("UPDATE stocks.refdata SET ");
+        final StringBuilder insertQuery = new StringBuilder("INSERT INTO stocks.refdata(symbol, ");
+        final StringBuilder valuesQuery = new StringBuilder("VALUES(:symbol, ");
+        final StringBuilder updateQuery = new StringBuilder("UPDATE SET ");
         final Map<String, Object> refDataMap = new HashMap<>();
 
         if (refData.getLtp() != null) {
+            insertQuery.append("ltp, ");
+            valuesQuery.append(":ltp, ");
             updateQuery.append("ltp = :ltp, ");
             refDataMap.put("ltp", refData.getLtp());
         }
         if (refData.getPrevClose() != null) {
+            insertQuery.append("prev_close, ");
+            valuesQuery.append(":prev_close, ");
             updateQuery.append("prev_close = :prev_close, ");
             refDataMap.put("prev_close", refData.getPrevClose());
         }
         if (refData.getOpen() != null) {
+            insertQuery.append("open, ");
+            valuesQuery.append(":open, ");
             updateQuery.append("open = :open, ");
             refDataMap.put("open", refData.getOpen());
         }
         if (refData.getHigh() != null) {
+            insertQuery.append("high, ");
+            valuesQuery.append(":high, ");
             updateQuery.append("high = :high, ");
             refDataMap.put("high", refData.getHigh());
         }
         if (refData.getLow() != null) {
+            insertQuery.append("low, ");
+            valuesQuery.append(":low, ");
             updateQuery.append("low = :low, ");
             refDataMap.put("low", refData.getLow());
         }
         if (refData.getBuyQty() != null) {
+            insertQuery.append("buy_qty, ");
+            valuesQuery.append(":buy_qty, ");
             updateQuery.append("buy_qty = :buy_qty, ");
             refDataMap.put("buy_qty", refData.getBuyQty());
         }
         if (refData.getSellQty() != null) {
+            insertQuery.append("sell_qty, ");
+            valuesQuery.append(":sell_qty, ");
             updateQuery.append("sell_qty = :sell_qty, ");
             refDataMap.put("sell_qty", refData.getSellQty());
         }
         if (refData.getTradeVolInLk() != null) {
+            insertQuery.append("volume_lk, ");
+            valuesQuery.append(":volume_lk, ");
             updateQuery.append("volume_lk = :volume_lk, ");
             refDataMap.put("volume_lk", refData.getTradeVolInLk());
         }
         if (refData.getTradeValInCr() != null) {
+            insertQuery.append("value_cr, ");
+            valuesQuery.append(":value_cr, ");
             updateQuery.append("value_cr = :value_cr, ");
             refDataMap.put("value_cr", refData.getTradeValInCr());
         }
         if (refData.getTotMarCapInCr() != null) {
+            insertQuery.append("tot_mar_cap_cr, ");
+            valuesQuery.append(":tot_mar_cap_cr, ");
             updateQuery.append("tot_mar_cap_cr = :tot_mar_cap_cr, ");
             refDataMap.put("tot_mar_cap_cr", refData.getTotMarCapInCr());
         }
         if (refData.getFfMarCapInCr() != null) {
+            insertQuery.append("ff_mar_cap_cr, ");
+            valuesQuery.append(":ff_mar_cap_cr, ");
             updateQuery.append("ff_mar_cap_cr = :ff_mar_cap_cr, ");
             refDataMap.put("ff_mar_cap_cr", refData.getFfMarCapInCr());
         }
         if (refData.getImpactCost() != null) {
+            insertQuery.append("impact_cost, ");
+            valuesQuery.append(":impact_cost, ");
             updateQuery.append("impact_cost = :impact_cost, ");
             refDataMap.put("impact_cost", refData.getImpactCost());
         }
         if (refData.getPerTradedQty() != null) {
+            insertQuery.append("per_traded_qty, ");
+            valuesQuery.append(":per_traded_qty, ");
             updateQuery.append("per_traded_qty = :per_traded_qty, ");
             refDataMap.put("per_traded_qty", refData.getPerTradedQty());
         }
         if (refData.getAppMarRate() != null) {
+            insertQuery.append("app_mar_rate, ");
+            valuesQuery.append(":app_mar_rate, ");
             updateQuery.append("app_mar_rate = :app_mar_rate, ");
             refDataMap.put("app_mar_rate", refData.getAppMarRate());
         }
         if (refData.getFaceValue() != null) {
+            insertQuery.append("face_val, ");
+            valuesQuery.append(":face_val, ");
             updateQuery.append("face_val = :face_val, ");
             refDataMap.put("face_val", refData.getFaceValue());
         }
         if (refData.getLow52() != null) {
+            insertQuery.append("low_52w, ");
+            valuesQuery.append(":low_52w, ");
             updateQuery.append("low_52w = :low_52w, ");
             refDataMap.put("low_52w", refData.getLow52());
         }
         if (refData.getLow52Dt() != null) {
+            insertQuery.append("low_52w_dt, ");
+            valuesQuery.append(":low_52w_dt, ");
             updateQuery.append("low_52w_dt = :low_52w_dt, ");
             refDataMap.put("low_52w_dt", Date.valueOf(refData.getLow52Dt()));
         }
         if (refData.getHigh52() != null) {
+            insertQuery.append("high_52w, ");
+            valuesQuery.append(":high_52w, ");
             updateQuery.append("high_52w = :high_52w, ");
             refDataMap.put("high_52w", refData.getHigh52());
         }
         if (refData.getHigh52Dt() != null) {
+            insertQuery.append("high_52w_dt, ");
+            valuesQuery.append(":high_52w_dt, ");
             updateQuery.append("high_52w_dt = :high_52w_dt, ");
             refDataMap.put("high_52w_dt", Date.valueOf(refData.getHigh52Dt()));
         }
         if (refData.getUpperBand() != null) {
+            insertQuery.append("upper_band, ");
+            valuesQuery.append(":upper_band, ");
             updateQuery.append("upper_band = :upper_band, ");
             refDataMap.put("upper_band", refData.getUpperBand());
         }
         if (refData.getLowerBand() != null) {
+            insertQuery.append("lower_band, ");
+            valuesQuery.append(":lower_band, ");
             updateQuery.append("lower_band = :lower_band, ");
             refDataMap.put("lower_band", refData.getLowerBand());
         }
         if (refData.getPriceBand() != null) {
+            insertQuery.append("price_band, ");
+            valuesQuery.append(":price_band, ");
             updateQuery.append("price_band = :price_band, ");
             refDataMap.put("price_band", refData.getPriceBand());
         }
         if (refData.getListedStatus() != null) {
+            insertQuery.append("listed_status, ");
+            valuesQuery.append(":listed_status, ");
             updateQuery.append("listed_status = :listed_status, ");
             refDataMap.put("listed_status", refData.getListedStatus());
         }
         if (refData.getListedDt() != null) {
+            insertQuery.append("listed_dt, ");
+            valuesQuery.append(":listed_dt, ");
             updateQuery.append("listed_dt = :listed_dt, ");
             refDataMap.put("listed_dt", Date.valueOf(refData.getListedDt()));
         }
         if (refData.getTradingStatus() != null) {
+            insertQuery.append("trading_status, ");
+            valuesQuery.append(":trading_status, ");
             updateQuery.append("trading_status = :trading_status, ");
             refDataMap.put("trading_status", refData.getTradingStatus());
         }
         if (refData.getAdjustedPE() != null) {
+            insertQuery.append("adjusted_pe, ");
+            valuesQuery.append(":adjusted_pe, ");
             updateQuery.append("adjusted_pe = :adjusted_pe, ");
             refDataMap.put("adjusted_pe", refData.getAdjustedPE());
         }
         if (refData.getSymbolPE() != null) {
+            insertQuery.append("symbol_pe, ");
+            valuesQuery.append(":symbol_pe, ");
             updateQuery.append("symbol_pe = :symbol_pe, ");
             refDataMap.put("symbol_pe", refData.getSymbolPE());
         }
         if (refData.getSectoralIndex() != null) {
+            insertQuery.append("sect_index, ");
+            valuesQuery.append(":sect_index, ");
             updateQuery.append("sect_index = :sect_index, ");
             refDataMap.put("sect_index", refData.getSectoralIndex());
         }
         if (refData.getBasicIndustry() != null) {
+            insertQuery.append("basic_industry, ");
+            valuesQuery.append(":basic_industry, ");
             updateQuery.append("basic_industry = :basic_industry, ");
             refDataMap.put("basic_industry", refData.getBasicIndustry());
         }
         if (refData.getBoardStatus() != null) {
+            insertQuery.append("board_status, ");
+            valuesQuery.append(":board_status, ");
             updateQuery.append("board_status = :board_status, ");
             refDataMap.put("board_status", refData.getBoardStatus());
         }
         if (refData.getTradingSegment() != null) {
+            insertQuery.append("trading_segment, ");
+            valuesQuery.append(":trading_segment, ");
             updateQuery.append("trading_segment = :trading_segment, ");
             refDataMap.put("trading_segment", refData.getTradingSegment());
         }
         if (refData.getSharesClass() != null) {
+            insertQuery.append("shares_class, ");
+            valuesQuery.append(":shares_class, ");
             updateQuery.append("shares_class = :shares_class, ");
             refDataMap.put("shares_class", refData.getSharesClass());
         }
         if (refData.getFinancialResults() != null) {
+            insertQuery.append("fin_results, ");
+            valuesQuery.append(":fin_results, ");
             updateQuery.append("fin_results = :fin_results, ");
             refDataMap.put("fin_results", refData.getFinancialResults());
 
             if (refData.getTotIncomeInCr() != null) {
+                insertQuery.append("tot_income_cr, ");
+                valuesQuery.append(":tot_income_cr, ");
                 updateQuery.append("tot_income_cr = :tot_income_cr, ");
                 refDataMap.put("tot_income_cr", refData.getTotIncomeInCr());
             }
             if (refData.getNetPnLInCr() != null) {
+                insertQuery.append("net_pnl_cr, ");
+                valuesQuery.append(":net_pnl_cr, ");
                 updateQuery.append("net_pnl_cr = :net_pnl_cr, ");
                 refDataMap.put("net_pnl_cr", refData.getNetPnLInCr());
             }
             if (refData.getEarningsPerShare() != null) {
+                insertQuery.append("earnings_share, ");
+                valuesQuery.append(":earnings_share, ");
                 updateQuery.append("earnings_share = :earnings_share, ");
                 refDataMap.put("earnings_share", refData.getEarningsPerShare());
             }
         }
         if (refData.getShareholdingPatterns() != null) {
+            insertQuery.append("holding_patterns, ");
+            valuesQuery.append(":holding_patterns, ");
             updateQuery.append("holding_patterns = :holding_patterns, ");
             refDataMap.put("holding_patterns", refData.getShareholdingPatterns());
 
             if (refData.getPromoterSHP() != null) {
+                insertQuery.append("promoter_holding, ");
+                valuesQuery.append(":promoter_holding, ");
                 updateQuery.append("promoter_holding = :promoter_holding, ");
                 refDataMap.put("promoter_holding", refData.getPromoterSHP());
             }
             if (refData.getPublicSHP() != null) {
+                insertQuery.append("public_holding, ");
+                valuesQuery.append(":public_holding, ");
                 updateQuery.append("public_holding = :public_holding, ");
                 refDataMap.put("public_holding", refData.getPublicSHP());
             }
         }
         if (refData.getCorpActions() != null) {
+            insertQuery.append("corp_actions, ");
+            valuesQuery.append(":corp_actions, ");
             updateQuery.append("corp_actions = :corp_actions, ");
             refDataMap.put("corp_actions", refData.getCorpActions());
         }
@@ -257,23 +339,37 @@ public class NSERepositoryImpl implements NSERepository {
         }
 
         if (refData.getName() != null) {
+            insertQuery.append("name, ");
+            valuesQuery.append(":name, ");
             updateQuery.append("name = :name, ");
             refDataMap.put("name", refData.getName());
         }
         if (refData.getIsin() != null) {
+            insertQuery.append("isin, ");
+            valuesQuery.append(":isin, ");
             updateQuery.append("isin = :isin, ");
             refDataMap.put("isin", refData.getIsin());
         }
         if (refData.getSeries() != null) {
+            insertQuery.append("series, ");
+            valuesQuery.append(":series, ");
             updateQuery.append("series = :series, ");
             refDataMap.put("series", refData.getSeries());
         }
 
-        updateQuery.append("inst_updated_at = :inst_updated_at, status = :status WHERE symbol = :symbol");
+        insertQuery.append("inst_updated_at, status)");
+        valuesQuery.append(":inst_updated_at, :status)");
+        updateQuery.append("inst_updated_at = :inst_updated_at, status = :status");
         refDataMap.put("inst_updated_at", Timestamp.valueOf(LocalDateTime.now()));
         refDataMap.put("symbol", refData.getSymbol());
 
-        int updateResult = namedJdbcTemplate.update(updateQuery.toString(), refDataMap);
+        final String upsertQuery = String.join(" ",
+                insertQuery,
+                valuesQuery,
+                "ON CONFLICT (symbol) DO",
+                updateQuery);
+
+        int updateResult = namedJdbcTemplate.update(upsertQuery, refDataMap);
 
         log.info("Symbol: {}, Status: {}, Update result: {}", refData.getSymbol(), refDataMap.get("status"), updateResult);
     }

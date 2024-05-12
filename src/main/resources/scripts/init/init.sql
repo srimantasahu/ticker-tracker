@@ -43,16 +43,16 @@ CREATE TABLE IF NOT EXISTS stocks.refdata
     ltp double precision NOT NULL,
     low_52w double precision NOT NULL,
     high_52w double precision NOT NULL,
-    per_chng_30d double precision NOT NULL,
-    per_chng_365d double precision NOT NULL,
+    per_chng_30d double precision,
+    per_chng_365d double precision,
 	adjusted_pe double precision,
     symbol_pe double precision,
     prev_close double precision,
     open double precision NOT NULL,
     low double precision NOT NULL,
     high double precision NOT NULL,
-    chng double precision NOT NULL,
-    per_chng double precision NOT NULL,
+    chng double precision,
+    per_chng double precision,
 	buy_qty bigint,
     sell_qty bigint,
     per_traded_qty double precision,
@@ -110,6 +110,8 @@ ALTER TABLE IF EXISTS stocks.refdata
 -- ALTER TABLE stocks.refdata ALTER COLUMN name TYPE character varying(120);
 -- ALTER TABLE stocks.refdata ADD COLUMN series character(2);
 -- ALTER TABLE stocks.refdata ADD COLUMN category character varying(20);
+-- ALTER TABLE stocks.refdata ALTER per_chng_30d DROP NOT NULL, ALTER per_chng_365d DROP NOT NULL;
+-- ALTER TABLE stocks.refdata ALTER chng DROP NOT NULL, ALTER per_chng DROP NOT NULL;
 
 
 ------------------------------------------------------------------------------------------------------------------------
