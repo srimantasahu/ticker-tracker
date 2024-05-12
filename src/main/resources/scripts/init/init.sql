@@ -40,17 +40,17 @@ CREATE TABLE IF NOT EXISTS stocks.refdata
     symbol character varying(25) COLLATE pg_catalog."default" NOT NULL,
     name character varying(80),
     isin character(12),
-    ltp double precision NOT NULL,
-    low_52w double precision NOT NULL,
-    high_52w double precision NOT NULL,
+    ltp double precision,
+    low_52w double precision,
+    high_52w double precision,
     per_chng_30d double precision,
     per_chng_365d double precision,
 	adjusted_pe double precision,
     symbol_pe double precision,
     prev_close double precision,
-    open double precision NOT NULL,
-    low double precision NOT NULL,
-    high double precision NOT NULL,
+    open double precision,
+    low double precision,
+    high double precision,
     chng double precision,
     per_chng double precision,
 	buy_qty bigint,
@@ -112,6 +112,7 @@ ALTER TABLE IF EXISTS stocks.refdata
 -- ALTER TABLE stocks.refdata ADD COLUMN category character varying(20);
 -- ALTER TABLE stocks.refdata ALTER per_chng_30d DROP NOT NULL, ALTER per_chng_365d DROP NOT NULL;
 -- ALTER TABLE stocks.refdata ALTER chng DROP NOT NULL, ALTER per_chng DROP NOT NULL;
+-- ALTER TABLE stocks.refdata ALTER ltp DROP NOT NULL, ALTER low_52w DROP NOT NULL, ALTER high_52w DROP NOT NULL, ALTER open DROP NOT NULL, ALTER low DROP NOT NULL, ALTER high DROP NOT NULL;
 
 
 ------------------------------------------------------------------------------------------------------------------------

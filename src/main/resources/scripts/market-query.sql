@@ -1,6 +1,6 @@
 -- select basic_industry, count(*) from stocks.refdata group by basic_industry order by count(*), basic_industry;
 
--- select * from stocks.refdata where symbol = 'THYROCARE';
+-- select * from stocks.refdata where symbol = 'MADHUSUDAN';
 
 -- select * from stocks.buynsell where symbol = 'INFY' order by side, updated_at;
 
