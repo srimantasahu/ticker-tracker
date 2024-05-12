@@ -10,6 +10,7 @@ import com.indvest.stocks.tracker.repository.NSERepository;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -518,5 +519,22 @@ public class NSEService {
         }
 
         return refDataList;
+    }
+
+    public StatusMessage storeBuyNSell(BuyNSell buyNSell) {
+        if (ObjectUtils.anyNull(buyNSell.symbol(), buyNSell.side(), buyNSell.price(), buyNSell.qty())) {
+            return new StatusMessage(INVALID, "Require values for symbol, side, price, qty");
+        }
+
+        try {
+            log.info("Storing {} data for instrument: {}", buyNSell.side(), buyNSell.symbol());
+
+            nseRepository.save(buyNSell);
+
+            return new StatusMessage(SUCCESS, "Stored BuyNSell data successfully");
+        } catch (Exception e) {
+            log.error("Error message: {}", e.getMessage());
+            return new StatusMessage(Status.ERROR, "Some error occurred");
+        }
     }
 }

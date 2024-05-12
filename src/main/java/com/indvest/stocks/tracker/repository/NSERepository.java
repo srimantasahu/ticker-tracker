@@ -1,10 +1,11 @@
 package com.indvest.stocks.tracker.repository;
 
 
-import com.indvest.stocks.tracker.constant.InstrumentType;
-import com.indvest.stocks.tracker.constant.MarketType;
+import com.indvest.stocks.tracker.bean.BuyNSell;
 import com.indvest.stocks.tracker.bean.RefData;
 import com.indvest.stocks.tracker.bean.RefDataResult;
+import com.indvest.stocks.tracker.constant.InstrumentType;
+import com.indvest.stocks.tracker.constant.MarketType;
 
 import java.util.List;
 import java.util.Map;
@@ -20,4 +21,6 @@ public interface NSERepository {
     List<String> getInstruments(MarketType marketType);
 
     List<RefDataResult> getInstruments(String industry, MarketType marketType, String orderBy);
+
+    void save(BuyNSell buyNSell);
 }

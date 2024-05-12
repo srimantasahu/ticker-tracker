@@ -1,9 +1,10 @@
 package com.indvest.stocks.tracker.repository.impl;
 
-import com.indvest.stocks.tracker.constant.InstrumentType;
-import com.indvest.stocks.tracker.constant.MarketType;
+import com.indvest.stocks.tracker.bean.BuyNSell;
 import com.indvest.stocks.tracker.bean.RefData;
 import com.indvest.stocks.tracker.bean.RefDataResult;
+import com.indvest.stocks.tracker.constant.InstrumentType;
+import com.indvest.stocks.tracker.constant.MarketType;
 import com.indvest.stocks.tracker.repository.NSERepository;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -354,6 +355,24 @@ public class NSERepositoryImpl implements NSERepository {
             result.setSectoralIndex(rs.getString("sect_index"));
             return result;
         });
+    }
+
+    @Override
+    public void save(BuyNSell buyNSell) {
+
+        final String upsertQuery = String.join(" ",
+                "INSERT INTO stocks.buynsell(symbol, side, price, qty, ltp)",
+                "VALUES(:symbol, :side, :price, :qty, (SELECT ltp FROM stocks.refdata WHERE symbol = :symbol))",
+                "ON CONFLICT (symbol, side, ltp)",
+                "DO UPDATE SET price = :price, qty = :qty, updated_at = :updated_at");
+        final Map<String, Object> dataMap = Map.of("symbol", buyNSell.symbol(),
+                "side", buyNSell.side().name(),
+                "price", buyNSell.price(),
+                "qty", buyNSell.qty(),
+                "updated_at", Timestamp.valueOf(LocalDateTime.now()));
+
+        int updateResult = namedJdbcTemplate.update(upsertQuery, dataMap);
+        log.info("Symbol: {}, Side: {}, Update result: {}", buyNSell.symbol(), buyNSell.side(), updateResult);
     }
 
 }

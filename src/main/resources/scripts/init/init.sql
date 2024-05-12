@@ -132,3 +132,53 @@ select symbol, ltp from stocks.refdata where ltp < 200;
 
 
 ------------------------------------------------------------------------------------------------------------------------
+
+
+-- Table: stocks.buynsell
+
+-- DROP TABLE IF EXISTS stocks.buynsell;
+
+CREATE TABLE IF NOT EXISTS stocks.buynsell
+(
+    symbol character varying(25) REFERENCES stocks.refdata,
+    side character varying(5) NOT NULL,
+    price double precision NOT NULL,
+	qty bigint NOT NULL,
+	ltp double precision NOT NULL,
+	updated_at timestamp default NOW(),
+    id bigserial NOT NULL,
+    CONSTRAINT buynsell_pk PRIMARY KEY (symbol, side, ltp)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS stocks.buynsell
+
+
+------------------------------------------------------------------------------------------------------------------------
+SELECT ltp FROM stocks.refdata WHERE symbol = 'THYROCARE'
+
+INSERT INTO stocks.buynsell(
+	symbol, side, price, qty, ltp)
+	VALUES ('INFY', 'BUY', 1400.0, 10, (SELECT COALESCE(ltp, 0) FROM stocks.refdata WHERE symbol = 'INFY'))
+ON CONFLICT (symbol, side, ltp) DO UPDATE SET price = 123.24, qty = 12, updated_at = NOW();
+
+
+INSERT INTO stocks.buynsell(
+	symbol, side, price, qty, ltp)
+	VALUES ('INFY', 'SELL', 1600.0, 5, (SELECT ltp FROM stocks.refdata WHERE symbol = 'INFY'))
+ON CONFLICT (symbol, side, ltp) DO UPDATE SET price = 1600.0, qty = 4, updated_at = NOW();
+
+COMMIT;
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+
+select * from stocks.buynsell;
+select * from stocks.buynsell order by side, updated_at;
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+

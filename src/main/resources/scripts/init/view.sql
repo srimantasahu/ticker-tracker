@@ -33,7 +33,7 @@ CREATE OR REPLACE VIEW stocks.v_refdata
                       WHERE refdata_1.tot_mar_cap_cr IS NOT NULL) rt
               WHERE rt.rank_number = 750)) THEN 'MICRO CAP'::text
             ELSE 'NA'::text
-        END AS "case",
+        END AS cap,
     low_52w,
     ltp,
     high_52w,
@@ -54,4 +54,7 @@ CREATE OR REPLACE VIEW stocks.v_refdata
 
 ALTER TABLE stocks.v_refdata
     OWNER TO postgres;
+	
+	
+-- ALTER VIEW stocks.v_refdata RENAME COLUMN "case" to cap;
 
