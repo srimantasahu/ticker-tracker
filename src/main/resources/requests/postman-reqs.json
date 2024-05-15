@@ -89,33 +89,6 @@
 			"response": []
 		},
 		{
-			"name": "refresh-nse-instruments",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8085/ticker-tracker/nse/refresh?status=ALL",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8085",
-					"path": [
-						"ticker-tracker",
-						"nse",
-						"refresh"
-					],
-					"query": [
-						{
-							"key": "status",
-							"value": "ALL"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "reload-nse-instruments",
 			"request": {
 				"method": "GET",
@@ -136,6 +109,33 @@
 						{
 							"key": "type",
 							"value": "MICRO_CAP"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "refresh-nse-instruments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/ticker-tracker/nse/refresh?status=ALL",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"ticker-tracker",
+						"nse",
+						"refresh"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "ALL"
 						}
 					]
 				}
@@ -184,7 +184,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"symbol\" : \"INFY\",\n    \"side\" : \"BUY\",\n    \"price\" : 1333.45,\n    \"qty\" : 5\n}",
+					"raw": "{\n    \"symbol\" : \"CIEINDIA\",\n    \"side\" : \"BUY\",\n    \"price\" : 250,\n    \"qty\" : 500\n}",
 					"options": {
 						"raw": {
 							"language": "json"
