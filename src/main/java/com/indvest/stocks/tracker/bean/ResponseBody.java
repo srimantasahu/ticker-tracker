@@ -4,5 +4,5 @@ import com.indvest.stocks.tracker.constant.Status;
 
 import java.util.List;
 
-public record ResponseBody(QueryParams queryParams, Status status, List<RefDataResult> results, String message) {
+public record ResponseBody(Object queryParams, Status status, List<?> results, String message) {
 }

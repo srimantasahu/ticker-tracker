@@ -1,10 +1,12 @@
 package com.indvest.stocks.tracker.repository.impl;
 
 import com.indvest.stocks.tracker.bean.BuyNSell;
+import com.indvest.stocks.tracker.bean.BuyNSellResult;
 import com.indvest.stocks.tracker.bean.RefData;
 import com.indvest.stocks.tracker.bean.RefDataResult;
 import com.indvest.stocks.tracker.constant.InstrumentType;
 import com.indvest.stocks.tracker.constant.MarketType;
+import com.indvest.stocks.tracker.constant.Side;
 import com.indvest.stocks.tracker.repository.NSERepository;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -469,6 +471,45 @@ public class NSERepositoryImpl implements NSERepository {
 
         int updateResult = namedJdbcTemplate.update(upsertQuery, dataMap);
         log.info("Symbol: {}, Side: {}, Update result: {}", buyNSell.symbol(), buyNSell.side(), updateResult);
+    }
+
+    @Override
+    public List<String> getBnSInstruments(Side side) {
+        final String symbolsQuery = "SELECT distinct symbol FROM stocks.buynsell WHERE side = :side";
+        final Map<String, Object> params = Map.of("side", side.name());
+
+        return namedJdbcTemplate.queryForList(symbolsQuery, params, String.class);
+    }
+
+    @Override
+    public List<BuyNSellResult> getBnSInstruments(Side side, Double range, String orderBy) {
+        String symbolsQuery = "SELECT rd.*, rd.ltp as current_ltp, bns.* FROM stocks.buynsell bns, stocks.v_refdata rd " +
+                "WHERE bns.symbol = rd.symbol AND bns.side = :side AND bns.price > (1 - :range) * rd.ltp ORDER BY " + orderBy;
+        final Map<String, Object> params = Map.of("side", side.name(), "range", range);
+
+        return namedJdbcTemplate.query(symbolsQuery, params, (rs, rowNum) -> {
+            BuyNSellResult result = new BuyNSellResult();
+            result.setRowNum(rowNum);
+            result.setName(rs.getString("name"));
+            result.setSymbol(rs.getString("symbol"));
+            result.setMarketCap(rs.getString("cap"));
+            result.setCurrentLtp(rs.getDouble("current_ltp"));
+            result.setPrice(rs.getDouble("price"));
+            result.setQty(rs.getInt("qty"));
+            result.setLtp(rs.getDouble("ltp"));
+            result.setLow52w(rs.getDouble("low_52w"));
+            result.setHigh52w(rs.getDouble("high_52w"));
+            result.setSymbolPE(rs.getDouble("symbol_pe"));
+            result.setFaceVal(rs.getDouble("face_val"));
+            result.setEarningsPerShare(rs.getDouble("earnings_share"));
+            result.setPerChange30D(rs.getDouble("per_chng_30d"));
+            result.setPerChange365D(rs.getDouble("per_chng_365d"));
+            result.setPromoterHolding(rs.getDouble("promoter_holding"));
+            result.setPublicHolding(rs.getDouble("public_holding"));
+            result.setBasicIndustry(rs.getString("basic_industry"));
+            result.setSectoralIndex(rs.getString("sect_index"));
+            return result;
+        });
     }
 
 }

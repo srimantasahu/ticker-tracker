@@ -43,20 +43,20 @@ public class NSEController {
         return new Response(instruments.toString(), statusMessage.status(), statusMessage.message());
     }
 
-    @GetMapping("refresh")
-    public Response refresh(@RequestParam String status) {
-        log.info("Request received for refreshing instruments with status: {}", status);
-        StatusMessage statusMessage = nseService.refreshStocksData(status);
-        log.info("Refreshing of instruments resulted: {}, with message: {}", statusMessage.status(), statusMessage.message());
-        return new Response(status, statusMessage.status(), statusMessage.message());
-    }
-
     @GetMapping("reload")
     public Response reload(@RequestParam String type) {
         log.info("Request received for refreshing instruments with status: {}", type);
         StatusMessage statusMessage = nseService.reloadStocksData(type);
         log.info("Refreshing of instruments resulted: {}, with message: {}", statusMessage.status(), statusMessage.message());
         return new Response(type, statusMessage.status(), statusMessage.message());
+    }
+
+    @GetMapping("refresh")
+    public Response refresh(@RequestParam String status) {
+        log.info("Request received for refreshing instruments with status: {}", status);
+        StatusMessage statusMessage = nseService.refreshStocksData(status);
+        log.info("Refreshing of instruments resulted: {}, with message: {}", statusMessage.status(), statusMessage.message());
+        return new Response(status, statusMessage.status(), statusMessage.message());
     }
 
     @GetMapping("query")
@@ -73,6 +73,22 @@ public class NSEController {
         StatusMessage statusMessage = nseService.storeBuyNSell(buyNSell);
         log.info("Request for buyNSell resulted: {}, with message: {}", statusMessage.status(), statusMessage.message());
         return new Response(buyNSell.symbol(), statusMessage.status(), statusMessage.message());
+    }
+
+    @GetMapping("refresh-bns")
+    public Response refreshBnS(@RequestParam String side) {
+        log.info("Request received for refreshing BuyNSell instruments with side: {}", side);
+        StatusMessage statusMessage = nseService.refreshBnSStocksData(side);
+        log.info("Refreshing of instruments resulted: {}, with message: {}", statusMessage.status(), statusMessage.message());
+        return new Response(side, statusMessage.status(), statusMessage.message());
+    }
+
+    @GetMapping("query-bns")
+    public ResponseBody queryBnS(@RequestParam String side, @RequestParam Double range, @RequestParam String order) {
+        log.info("Query received for BuyNSell side: {}, range: {}, and order by: {}", side, range, order);
+        StatusBody statusBody = nseService.getBnSStocksData(side, range, order);
+        log.info("Querying of instruments resulted: {}, with results count: {}", statusBody.status(), CollectionUtils.size(statusBody.results()));
+        return new ResponseBody(new QueryParamsBnS(side, range), statusBody.status(), statusBody.results(), statusBody.message());
     }
 
 }

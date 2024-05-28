@@ -2,10 +2,7 @@ package com.indvest.stocks.tracker.service;
 
 import com.google.common.net.UrlEscapers;
 import com.indvest.stocks.tracker.bean.*;
-import com.indvest.stocks.tracker.constant.DbStatus;
-import com.indvest.stocks.tracker.constant.InstrumentType;
-import com.indvest.stocks.tracker.constant.MarketType;
-import com.indvest.stocks.tracker.constant.Status;
+import com.indvest.stocks.tracker.constant.*;
 import com.indvest.stocks.tracker.repository.NSERepository;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
@@ -180,8 +177,26 @@ public class NSEService {
         return new StatusMessage(SUCCESS, "Ref data loaded successfully");
     }
 
+    public StatusMessage reloadStocksData(String type) {
+        log.info("Reloading instrument ref data");
+        if (Stream.of(MarketType.values()).noneMatch(sts -> sts.name().equals(type))) {
+            return new StatusMessage(INVALID, "Require a valid market type");
+        }
+
+        try {
+            log.info("Reloading instrument data for type: {}", type);
+
+            final List<String> instruments = nseRepository.getInstruments(MarketType.valueOf(type));
+
+            return loadStocksData(instruments);
+        } catch (Exception e) {
+            log.error("Error message: {}", e.getMessage());
+            return new StatusMessage(Status.ERROR, e.getMessage());
+        }
+    }
+
     public StatusMessage refreshStocksData(String status) {
-        log.info("Refreshing instrument ref data");
+        log.info("Refreshing instrument ref data for status: {}", status);
         if (Stream.of(Status.values()).noneMatch(sts -> sts.name().equals(status))) {
             return new StatusMessage(INVALID, "Require a valid status");
         }
@@ -207,24 +222,6 @@ public class NSEService {
         }
     }
 
-    public StatusMessage reloadStocksData(String type) {
-        log.info("Reloading instrument ref data");
-        if (Stream.of(MarketType.values()).noneMatch(sts -> sts.name().equals(type))) {
-            return new StatusMessage(INVALID, "Require a valid market type");
-        }
-
-        try {
-            log.info("Reloading instrument data for type: {}", type);
-
-            final List<String> instruments = nseRepository.getInstruments(MarketType.valueOf(type));
-
-            return loadStocksData(instruments);
-        } catch (Exception e) {
-            log.error("Error message: {}", e.getMessage());
-            return new StatusMessage(Status.ERROR, e.getMessage());
-        }
-    }
-
     public StatusBody getStocksData(String industry, String type, String orderBy) {
         log.info("Querying instrument ref data");
         if (Stream.of(MarketType.values()).noneMatch(sts -> sts.name().equals(type))) {
@@ -241,7 +238,6 @@ public class NSEService {
             log.error("Error message: {}", e.getMessage());
             return new StatusBody(Status.ERROR, e.getMessage(), null);
         }
-
     }
 
     private RefData extractRefData(String symbol, WebDriver driver, FluentWait<WebDriver> wait) throws Exception {
@@ -535,6 +531,42 @@ public class NSEService {
         } catch (Exception e) {
             log.error("Error message: {}", e.getMessage());
             return new StatusMessage(Status.ERROR, "Some error occurred");
+        }
+    }
+
+    public StatusMessage refreshBnSStocksData(String side) {
+        log.info("Refreshing BuyNSell instrument ref data");
+        if (Stream.of(Side.values()).noneMatch(sts -> sts.name().equals(side))) {
+            return new StatusMessage(INVALID, "Require a valid side");
+        }
+
+        try {
+            log.info("Refreshing BuyNSell instruments for side: {}", side);
+
+            final List<String> instruments = nseRepository.getBnSInstruments(Side.valueOf(side));
+
+            return loadStocksData(instruments);
+        } catch (Exception e) {
+            log.error("Error message: {}", e.getMessage());
+            return new StatusMessage(Status.ERROR, e.getMessage());
+        }
+    }
+
+    public StatusBody getBnSStocksData(String side, Double range, String orderBy) {
+        log.info("Querying BuyNSell instrument ref data");
+        if (Stream.of(Side.values()).noneMatch(sts -> sts.name().equals(side))) {
+            return new StatusBody(INVALID, "Require a valid side", null);
+        }
+
+        try {
+            log.info("Querying BuyNSell instrument data for side: {}, range: {}, and order by: {}", side, range, orderBy);
+
+            final List<BuyNSellResult> results = nseRepository.getBnSInstruments(Side.valueOf(side), range, orderBy);
+
+            return new StatusBody(SUCCESS, "Queried successfully", results);
+        } catch (Exception e) {
+            log.error("Error message: {}", e.getMessage());
+            return new StatusBody(Status.ERROR, e.getMessage(), null);
         }
     }
 }
