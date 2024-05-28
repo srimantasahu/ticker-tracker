@@ -459,14 +459,15 @@ public class NSERepositoryImpl implements NSERepository {
     public void save(BuyNSell buyNSell) {
 
         final String upsertQuery = String.join(" ",
-                "INSERT INTO stocks.buynsell(symbol, side, price, qty, ltp)",
-                "VALUES(:symbol, :side, :price, :qty, (SELECT ltp FROM stocks.refdata WHERE symbol = :symbol))",
+                "INSERT INTO stocks.buynsell(symbol, side, price, qty, ltp, face_val, priority)",
+                "VALUES(:symbol, :side, :price, :qty, (SELECT ltp FROM stocks.refdata WHERE symbol = :symbol), (SELECT face_val FROM stocks.refdata WHERE symbol = :symbol), :priority)",
                 "ON CONFLICT (symbol, side, ltp)",
-                "DO UPDATE SET price = :price, qty = :qty, updated_at = :updated_at");
+                "DO UPDATE SET price = :price, qty = :qty, priority = :priority, updated_at = :updated_at");
         final Map<String, Object> dataMap = Map.of("symbol", buyNSell.symbol(),
                 "side", buyNSell.side().name(),
                 "price", buyNSell.price(),
                 "qty", buyNSell.qty(),
+                "priority", buyNSell.priority().name(),
                 "updated_at", Timestamp.valueOf(LocalDateTime.now()));
 
         int updateResult = namedJdbcTemplate.update(upsertQuery, dataMap);
@@ -497,6 +498,7 @@ public class NSERepositoryImpl implements NSERepository {
             result.setPrice(rs.getDouble("price"));
             result.setQty(rs.getInt("qty"));
             result.setLtp(rs.getDouble("ltp"));
+            result.setPriority(rs.getString("priority"));
             result.setLow52w(rs.getDouble("low_52w"));
             result.setHigh52w(rs.getDouble("high_52w"));
             result.setSymbolPE(rs.getDouble("symbol_pe"));

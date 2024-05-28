@@ -9,6 +9,7 @@ public class BuyNSellResult {
     private Double price;
     private Integer qty;
     private Double ltp;
+    private String priority;
     private Double high52w;
     private Double low52w;
     private Double symbolPE;
@@ -76,6 +77,14 @@ public class BuyNSellResult {
 
     public void setLtp(Double ltp) {
         this.ltp = ltp;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
     }
 
     public Double getHigh52w() {

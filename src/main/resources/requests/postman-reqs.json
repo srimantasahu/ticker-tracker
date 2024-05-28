@@ -1,273 +1,273 @@
 {
-  "info": {
-    "_postman_id": "c2e169af-875f-4d11-9534-bf9bb10e0e01",
-    "name": "TickerTracker",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "34337758",
-    "_collection_link": "https://ticker-tracker.postman.co/workspace/Team-Workspace~1184e414-42fe-4797-8a0b-4ab7c976aef0/collection/34337758-c2e169af-875f-4d11-9534-bf9bb10e0e01?action=share&source=collection_link&creator=34337758"
-  },
-  "item": [
-    {
-      "name": "download-nse-data",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8085/ticker-tracker/nse/download?entity=NIFTY TOTAL MARKET",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8085",
-          "path": [
-            "ticker-tracker",
-            "nse",
-            "download"
-          ],
-          "query": [
-            {
-              "key": "entity",
-              "value": "NIFTY TOTAL MARKET"
-            }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "store-nse-data",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8085/ticker-tracker/nse/store?entity=NIFTY TOTAL MARKET",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8085",
-          "path": [
-            "ticker-tracker",
-            "nse",
-            "store"
-          ],
-          "query": [
-            {
-              "key": "entity",
-              "value": "NIFTY TOTAL MARKET"
-            }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "load-nse-instruments",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8085/ticker-tracker/nse/load?instruments=UTKARSHBNK,SANGHIIND,TV18BRDCST,SINDHUTRAD,ALLCARGO",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8085",
-          "path": [
-            "ticker-tracker",
-            "nse",
-            "load"
-          ],
-          "query": [
-            {
-              "key": "instruments",
-              "value": "UTKARSHBNK,SANGHIIND,TV18BRDCST,SINDHUTRAD,ALLCARGO"
-            }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "reload-nse-instruments",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8085/ticker-tracker/nse/reload?type=MICRO_CAP",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8085",
-          "path": [
-            "ticker-tracker",
-            "nse",
-            "reload"
-          ],
-          "query": [
-            {
-              "key": "type",
-              "value": "MICRO_CAP"
-            }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "refresh-nse-instruments",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8085/ticker-tracker/nse/refresh?status=ALL",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8085",
-          "path": [
-            "ticker-tracker",
-            "nse",
-            "refresh"
-          ],
-          "query": [
-            {
-              "key": "status",
-              "value": "ALL"
-            }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "refresh-bns-nse-instruments",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8085/ticker-tracker/nse/refresh-bns?side=BUY",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8085",
-          "path": [
-            "ticker-tracker",
-            "nse",
-            "refresh-bns"
-          ],
-          "query": [
-            {
-              "key": "side",
-              "value": "BUY"
-            }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "query-nse-instruments",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8085/ticker-tracker/nse/query?industry=Pharmaceuticals&type=ALL&order=ltp/face_val",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8085",
-          "path": [
-            "ticker-tracker",
-            "nse",
-            "query"
-          ],
-          "query": [
-            {
-              "key": "industry",
-              "value": "Pharmaceuticals"
-            },
-            {
-              "key": "type",
-              "value": "ALL"
-            },
-            {
-              "key": "order",
-              "value": "ltp/face_val"
-            }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "query-bns-nse-instruments",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8085/ticker-tracker/nse/query-bns?side=BUY&range=0.15&order=price/face_val",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8085",
-          "path": [
-            "ticker-tracker",
-            "nse",
-            "query-bns"
-          ],
-          "query": [
-            {
-              "key": "side",
-              "value": "BUY"
-            },
-            {
-              "key": "range",
-              "value": "0.15"
-            },
-            {
-              "key": "order",
-              "value": "price/face_val"
-            }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "buynsell-record",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n    \"symbol\" : \"INDOCO\",\n    \"side\" : \"BUY\",\n    \"price\" : 285,\n    \"qty\" : 800\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "http://localhost:8085/ticker-tracker/nse/buynsell",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8085",
-          "path": [
-            "ticker-tracker",
-            "nse",
-            "buynsell"
-          ]
-        }
-      },
-      "response": []
-    }
-  ]
+	"info": {
+		"_postman_id": "c2e169af-875f-4d11-9534-bf9bb10e0e01",
+		"name": "TickerTracker",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34337758",
+		"_collection_link": "https://ticker-tracker.postman.co/workspace/Team-Workspace~1184e414-42fe-4797-8a0b-4ab7c976aef0/collection/34337758-c2e169af-875f-4d11-9534-bf9bb10e0e01?action=share&source=collection_link&creator=34337758"
+	},
+	"item": [
+		{
+			"name": "download-nse-data",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/ticker-tracker/nse/download?entity=NIFTY TOTAL MARKET",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"ticker-tracker",
+						"nse",
+						"download"
+					],
+					"query": [
+						{
+							"key": "entity",
+							"value": "NIFTY TOTAL MARKET"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "store-nse-data",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/ticker-tracker/nse/store?entity=NIFTY TOTAL MARKET",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"ticker-tracker",
+						"nse",
+						"store"
+					],
+					"query": [
+						{
+							"key": "entity",
+							"value": "NIFTY TOTAL MARKET"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "load-nse-instruments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/ticker-tracker/nse/load?instruments=UTKARSHBNK,SANGHIIND,TV18BRDCST,SINDHUTRAD,ALLCARGO",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"ticker-tracker",
+						"nse",
+						"load"
+					],
+					"query": [
+						{
+							"key": "instruments",
+							"value": "UTKARSHBNK,SANGHIIND,TV18BRDCST,SINDHUTRAD,ALLCARGO"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "reload-nse-instruments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/ticker-tracker/nse/reload?type=MICRO_CAP",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"ticker-tracker",
+						"nse",
+						"reload"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "MICRO_CAP"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "refresh-nse-instruments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/ticker-tracker/nse/refresh?status=ALL",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"ticker-tracker",
+						"nse",
+						"refresh"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "ALL"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "refresh-bns-nse-instruments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/ticker-tracker/nse/refresh-bns?side=BUY",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"ticker-tracker",
+						"nse",
+						"refresh-bns"
+					],
+					"query": [
+						{
+							"key": "side",
+							"value": "BUY"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query-nse-instruments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/ticker-tracker/nse/query?industry=Pharmaceuticals&type=ALL&order=ltp/face_val",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"ticker-tracker",
+						"nse",
+						"query"
+					],
+					"query": [
+						{
+							"key": "industry",
+							"value": "Pharmaceuticals"
+						},
+						{
+							"key": "type",
+							"value": "ALL"
+						},
+						{
+							"key": "order",
+							"value": "ltp/face_val"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query-bns-nse-instruments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/ticker-tracker/nse/query-bns?side=BUY&range=0.15&order=price/rd.face_val",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"ticker-tracker",
+						"nse",
+						"query-bns"
+					],
+					"query": [
+						{
+							"key": "side",
+							"value": "BUY"
+						},
+						{
+							"key": "range",
+							"value": "0.15"
+						},
+						{
+							"key": "order",
+							"value": "price/rd.face_val"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "buynsell-record",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"symbol\" : \"INDOCO\",\n    \"side\" : \"BUY\",\n    \"price\" : 285,\n    \"qty\" : 800\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8085/ticker-tracker/nse/buynsell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"ticker-tracker",
+						"nse",
+						"buynsell"
+					]
+				}
+			},
+			"response": []
+		}
+	]
 }

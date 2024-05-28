@@ -32,7 +32,7 @@ where bns.symbol = rd.symbol
 and bns.price > 0.8 * rd.ltp 
 and rd.face_val > 2
 and rd.cap in ('MID CAP', 'SMALL CAP', 'MICRO CAP')
-order by (rd.ltp-price)/face_val;
+order by (rd.ltp-price)/rd.face_val;
 
 
-
+update stocks.buynsell bns set face_val = (select face_val from stocks.refdata rd where bns.symbol = rd.symbol)

@@ -147,7 +147,9 @@ CREATE TABLE IF NOT EXISTS stocks.buynsell
     side character varying(5) NOT NULL,
     price double precision NOT NULL,
 	qty bigint NOT NULL,
+	face_val integer,
 	ltp double precision NOT NULL,
+	priority character varying(10) DEFAULT 'NA',
 	updated_at timestamp default NOW(),
     id bigserial NOT NULL,
     CONSTRAINT buynsell_pk PRIMARY KEY (symbol, side, ltp)
@@ -156,6 +158,11 @@ CREATE TABLE IF NOT EXISTS stocks.buynsell
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS stocks.buynsell
+
+-- ALTER TABLE stocks.buynsell ADD COLUMN face_val integer
+-- update stocks.buynsell bns set face_val = (select face_val from stocks.refdata rd where bns.symbol = rd.symbol)
+-- ALTER TABLE stocks.buynsell ADD COLUMN priority character varying(10)
+-- update stocks.buynsell bns set priority = 'NA'
 
 
 ------------------------------------------------------------------------------------------------------------------------
