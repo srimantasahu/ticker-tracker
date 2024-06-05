@@ -34,9 +34,10 @@ and rd.face_val >= 2
 and rd.cap in ('MID CAP', 'SMALL CAP', 'MICRO CAP')
 order by (rd.ltp-price)/rd.face_val;
 
--- select * from stocks.buynsell where symbol = 'CASTROLIND' order by side, updated_at;
+-- select * from stocks.buynsell where symbol = 'GODREJCP' order by side, updated_at;
+
+-- update stocks.buynsell set priority = 'HIGH' where symbol = 'DABUR';
 
 -- delete from stocks.buynsell where symbol = 'CASTROLIND';
 
--- update stocks.buynsell set priority = 'MEDIUM' where symbol = 'SFL';
 
