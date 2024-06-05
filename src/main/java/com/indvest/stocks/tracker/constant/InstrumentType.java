@@ -21,7 +21,7 @@ public enum InstrumentType {
 
     public static List<String> getCategory(String type) {
         return switch (type) {
-            case "ALL" -> Arrays.stream(values()).map(Enum::name).collect(Collectors.toList());
+//            case "ALL" -> Arrays.stream(values()).map(Enum::name).collect(Collectors.toList());
             case "SME" -> List.of(SME.name());
             default -> List.of(EQUITY.name());
         };

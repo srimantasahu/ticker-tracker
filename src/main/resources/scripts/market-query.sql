@@ -25,14 +25,18 @@ order by ltp/face_val asc;
 
 */
 
--- select * from stocks.buynsell where symbol = 'INFY' order by side, updated_at;
 
-select rd.cap, rd.face_val, rd.ltp as current_ltp, bns.* from stocks.buynsell bns, stocks.v_refdata rd
+select rd.name, bns.symbol, rd.cap, bns.side, bns.price, bns.qty, rd.ltp as current_ltp, bns.ltp as old_ltp, rd.face_val, bns.priority 
+from stocks.buynsell bns, stocks.v_refdata rd
 where bns.symbol = rd.symbol 
-and bns.price > 0.8 * rd.ltp 
-and rd.face_val > 2
+and bns.price > 0.9 * rd.ltp 
+and rd.face_val >= 2
 and rd.cap in ('MID CAP', 'SMALL CAP', 'MICRO CAP')
 order by (rd.ltp-price)/rd.face_val;
 
+-- select * from stocks.buynsell where symbol = 'CASTROLIND' order by side, updated_at;
 
-update stocks.buynsell bns set face_val = (select face_val from stocks.refdata rd where bns.symbol = rd.symbol)
+-- delete from stocks.buynsell where symbol = 'CASTROLIND';
+
+-- update stocks.buynsell set priority = 'MEDIUM' where symbol = 'SFL';
+
