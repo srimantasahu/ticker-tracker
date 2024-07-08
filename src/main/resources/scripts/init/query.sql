@@ -92,7 +92,7 @@ ltp asc;
 select symbol, name, basic_industry, ltp, high_52w, low_52w, prev_close, adjusted_pe, symbol_pe, earnings_share, face_val, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, price_band, buy_qty, sell_qty, sect_index from stocks.refdata 
 where 1=1
 and category = 'EQUITY'
-and ltp < 350
+and ltp < 500
 and (symbol_pe < 35 or adjusted_pe < 35)
 and face_val > 0
 and earnings_share > 0
@@ -106,7 +106,7 @@ earnings_share desc;
 select symbol, name, basic_industry, ltp, high_52w, low_52w, prev_close, adjusted_pe, symbol_pe, earnings_share, face_val, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, price_band, buy_qty, sell_qty, sect_index from stocks.refdata 
 where 1=1
 and category = 'EQUITY'
-and ltp < 250 
+and ltp < 400 
 and (symbol_pe < 25 or adjusted_pe < 25) 
 and face_val > 1
 and earnings_share > 0
@@ -122,7 +122,7 @@ earnings_share desc;
 select symbol, name, basic_industry, ltp, high_52w, low_52w, prev_close, adjusted_pe, symbol_pe, earnings_share, face_val, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, price_band, buy_qty, sell_qty, sect_index from stocks.refdata 
 where 1=1
 and category = 'EQUITY'
-and ltp < 250
+and ltp < 300
 and (symbol_pe < 25 or adjusted_pe < 25)
 and face_val > 1
 and earnings_share > 0
@@ -138,7 +138,7 @@ earnings_share desc;
 select symbol, name, basic_industry, ltp, high_52w, low_52w, prev_close, adjusted_pe, symbol_pe, earnings_share, face_val, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, price_band, buy_qty, sell_qty, sect_index from stocks.refdata 
 where 1=1
 and category = 'EQUITY'
-and ltp < 250
+and ltp < 200
 and (symbol_pe < 25 or adjusted_pe < 25)
 and face_val > 1
 and earnings_share > 0
@@ -152,7 +152,7 @@ earnings_share desc;
 select symbol, name, basic_industry, ltp, high_52w, low_52w, prev_close, adjusted_pe, symbol_pe, earnings_share, face_val, promoter_holding, public_holding, per_chng_365d, per_chng_30d, tot_mar_cap_cr, price_band, buy_qty, sell_qty, sect_index from stocks.refdata 
 where 1=1
 and category = 'SME'
-and ltp < 200
+and ltp < 100
 and face_val > 2
 and earnings_share > 0
 and promoter_holding > 60

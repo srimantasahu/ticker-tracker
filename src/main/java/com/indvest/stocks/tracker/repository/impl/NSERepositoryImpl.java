@@ -461,8 +461,8 @@ public class NSERepositoryImpl implements NSERepository {
         final String upsertQuery = String.join(" ",
                 "INSERT INTO stocks.buynsell(symbol, side, price, qty, ltp, face_val, priority)",
                 "VALUES(:symbol, :side, :price, :qty, (SELECT ltp FROM stocks.refdata WHERE symbol = :symbol), (SELECT face_val FROM stocks.refdata WHERE symbol = :symbol), :priority)",
-                "ON CONFLICT (symbol, side, ltp)",
-                "DO UPDATE SET price = :price, qty = :qty, priority = :priority, updated_at = :updated_at");
+                "ON CONFLICT (symbol, side)",
+                "DO UPDATE SET price = :price, qty = :qty, ltp = (SELECT ltp FROM stocks.refdata WHERE symbol = :symbol), face_val = (SELECT face_val FROM stocks.refdata WHERE symbol = :symbol), priority = :priority, updated_at = :updated_at");
         final Map<String, Object> dataMap = Map.of("symbol", buyNSell.symbol(),
                 "side", buyNSell.side().name(),
                 "price", buyNSell.price(),

@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS stocks.buynsell
 	priority character varying(10) DEFAULT 'NA',
 	updated_at timestamp default NOW(),
     id bigserial NOT NULL,
-    CONSTRAINT buynsell_pk PRIMARY KEY (symbol, side, ltp)
+    CONSTRAINT buynsell_pk PRIMARY KEY (symbol, side)
 )
 
 TABLESPACE pg_default;
@@ -163,7 +163,8 @@ ALTER TABLE IF EXISTS stocks.buynsell
 -- update stocks.buynsell bns set face_val = (select face_val from stocks.refdata rd where bns.symbol = rd.symbol)
 -- ALTER TABLE stocks.buynsell ADD COLUMN priority character varying(10)
 -- update stocks.buynsell bns set priority = 'NA'
-
+-- delete from stocks.buynsell a where a.ltp <> (select min(b.ltp) from stocks.buynsell b where a.symbol = b.symbol)
+-- ALTER TABLE stocks.buynsell DROP CONSTRAINT buynsell_pk, ADD CONSTRAINT buynsell_pk PRIMARY KEY (symbol, side)
 
 ------------------------------------------------------------------------------------------------------------------------
 SELECT ltp FROM stocks.refdata WHERE symbol = 'THYROCARE'
