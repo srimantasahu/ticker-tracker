@@ -28,19 +28,6 @@
 
 ---
 
-## 🧾 Sample API
-
-- `GET /api/tickers`  
-  Returns all stored equity data
-
-- `GET /api/tickers/{symbol}`  
-  Returns the latest data for a specific stock symbol
-
-- `POST /api/scrape`  
-  Triggers on-demand scraping and saves results to DB
-
----
-
 ## 🧱 Database Schema
 
 ```sql
